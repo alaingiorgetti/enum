@@ -16,8 +16,8 @@ The code in this folder is documented by the following papers (in French):
 
 Developed by Alain Giorgetti and Rémi Lazarini in 2018.
 
-1. CONTENTS
-===========
+CONTENTS
+========
 
 The files GL18afadl.pdf [GL18] and GL18extended.pdf [GL18ext] (in French) are a 
 published paper and its extended version with an interactive proof of completeness 
@@ -36,19 +36,19 @@ Linux Ubuntu 16/04) and replay the proofs.
 
 The file gui.sh is a bash script to create the Docker container.
 
-2. COPYRIGHT
-============
+COPYRIGHT
+=========
 
 This work is distributed under the GNU LGPL 3. See the enclosed LICENSE file.
 
-3. EXECUTION
-============
+EXECUTION
+=========
 
 The code is currently developed and maintained only for Linux. There are two methods to
 experiment with it.
 
-3.1. With installed tools
--------------------------
+With installed tools
+--------------------
 
 If you have already installed Why3, Alt-Ergo, CVC4, Z3 and Coq under Linux, you can try to replay
 the proofs with Why3 ide, as follows:
@@ -61,8 +61,8 @@ the proofs with Why3 ide, as follows:
     make idepermut1
 4. See other possible proving actions in Makefile
 
-3.2. In a Docker container
---------------------------
+In a Docker container
+---------------------
 
 If the former method fails, you can create a Docker container with compatible releases of all the
 tools, as follows:

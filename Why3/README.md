@@ -1,9 +1,3 @@
-Copyright 2018 Alain Giorgetti and Rémi Lazarini
-FEMTO-ST institute
-
-This software is distributed under the terms of the GNU Lesser
-General Public License version 2.1
-
 The code in this folder is documented by the following papers (in French):
 
 [GL18]    A. Giorgetti and R. Lazarini. Preuve de programmes d’énumération avec Why3.
@@ -39,7 +33,11 @@ The file gui.sh is a bash script to create the Docker container.
 COPYRIGHT
 =========
 
-This work is distributed under the GNU LGPL 3. See the enclosed LICENSE file.
+Copyright 2018 Alain Giorgetti and Rémi Lazarini, FEMTO-ST institute
+
+This software is distributed under the terms of the GNU Lesser
+General Public License version 2.1. See the LICENSE file.
+
 
 EXECUTION
 =========

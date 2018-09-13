@@ -4,15 +4,15 @@ FEMTO-ST institute
 This software is distributed under the terms of the GNU Lesser
 General Public License version 2.1
 
-The code in this archive is documented by the following papers (in French):
+The code in this folder is documented by the following papers (in French):
 
 [GL18]    A. Giorgetti and R. Lazarini. Preuve de programmes d’énumération avec Why3.
           In AFADL’18, pages 14–19, 2018.
           http://afadl2018.ls2n.fr/wp-content/uploads/sites/38/2018/06/AFADL_Procs_2018.pdf.
-          Local copy GL18afadl.pdf.
+          File [GL18afadl.pdf](https://github.com/alaingiorgetti/enum/blob/master/docs/GL18afadl.pdf).
 
 [GL18ext] A. Giorgetti and R. Lazarini. Preuve de programmes d’énumération avec Why3.
-          Extended version of [GL18]. File GL18extended.pdf.
+          Extended version of [GL18]. File [GL18extended.pdf](https://github.com/alaingiorgetti/enum/blob/master/docs/GL18extended.pdf).
 
 Developed by Alain Giorgetti and Rémi Lazarini in 2018.
 

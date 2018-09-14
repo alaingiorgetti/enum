@@ -51,11 +51,11 @@ With installed tools
 If you have already installed Why3, Alt-Ergo, CVC4, Z3 and Coq under Linux, you can try to replay
 the proofs with Why3 ide, as follows:
 
-1. Enter the folder
+1. Enter the folder:
 
     cd enum-master/Why3
 
-2. Start Why3 ide with Permutation1.mlw
+2. Start Why3 IDE with Permutation1.mlw:
 
     make idepermut1
 
@@ -70,21 +70,38 @@ tools, as follows:
 1. If Docker is not installed, follow the instructions at
    [https://docs.docker.com/install/linux/docker-ce/ubuntu/](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
    to install Docker
+
 2. Copy enum-master.zip in your personal folder (~/)
+
 3. Open a terminal in your personal folder
-4. Extract the archive
+
+4. Extract the archive:
+
     zip enum-master.zip -d enum-master
-5. Enter the folder
+
+5. Enter the folder:
+
     cd enum-master/Why3
+
    If you have chosen another location than your personal folder or another folder name
    than *enum-master*, just adapt accordingly the path ~/enum-master in the file gui.sh.
-6. Build the Docker image
+
+6. If you already have a Docker image named *proofimg*, replace *proofimg* by
+   another name in Makefile and gui.sh. Then build the Docker image:
+
     make build
-7. Create the Docker container. Its folder /home/opam/app/enum-master/ will contain
-   a complete copy of the project.
+
+7. If you already have a Docker container named *proofctr*, replace *proofctr* by
+   another name in Makefile and gui.sh. Then create the Docker container:
+
     bash gui.sh
+
+   Its folder /home/opam/app/enum-master/ will contain a complete copy of the project.
+
 8. Run the container, attached to the terminal
+
     make start (you are in the Docker container)
+
 9. Apply steps 1-3 of the method with installed tools
    (finally quit the container with `exit`)
 

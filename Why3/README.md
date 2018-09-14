@@ -84,7 +84,7 @@ tools, as follows:
     cd enum-master/Why3
 
    If you have chosen another location than your personal folder or another folder name
-   than *enum-master*, just adapt accordingly the path ~/enum-master in the file gui.sh.
+   than *enum-master*, just adapt accordingly the path *~/enum-master* in the file gui.sh.
 
 6. If you already have a Docker image named *proofimg*, replace *proofimg* by
    another name in Makefile and gui.sh. Then build the Docker image:
@@ -96,13 +96,18 @@ tools, as follows:
 
     bash gui.sh
 
-   Its folder /home/opam/app/enum-master/ will contain a complete copy of the project.
+   Its folder */home/opam/app/enum-master/* will contain a complete copy of the project.
 
-8. Run the container, attached to the terminal
+8. Run the container, attached to the terminal:
 
-    make start (you are in the Docker container)
+    make start
+
+   Then you are in the Docker container.
 
 9. Apply steps 1-3 of the method with installed tools
-   (finally quit the container with `exit`)
+
+10. Finally quit the container:
+
+    exit
 
 Successfully tested under Linux Ubuntu 16.04, with Docker 18.03.1-ce.

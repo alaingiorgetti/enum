@@ -23,7 +23,7 @@ idepermut1:
 	why3 ide -L ./ Permutation1.mlw
 
 build:
-	docker build --tag proof .
+	docker build --tag proofimg .
 
 start:
-	docker start --attach --interactive proof
+	docker start --attach --interactive proofctr

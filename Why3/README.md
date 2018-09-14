@@ -6,7 +6,8 @@ The code in this folder is documented by the following papers (in French):
           File [GL18afadl.pdf](https://github.com/alaingiorgetti/enum/blob/master/docs/GL18afadl.pdf).
 
 [GL18ext] A. Giorgetti and R. Lazarini. Preuve de programmes d’énumération avec Why3.
-          Extended version of [GL18]. File [GL18extended.pdf](https://github.com/alaingiorgetti/enum/blob/master/docs/GL18extended.pdf).
+          Extended version of [GL18].
+          File [GL18extended.pdf](https://github.com/alaingiorgetti/enum/blob/master/docs/GL18extended.pdf).
 
 Developed by Alain Giorgetti and Rémi Lazarini in 2018.
 
@@ -38,8 +39,8 @@ Copyright 2018 Alain Giorgetti and Rémi Lazarini, FEMTO-ST institute
 This software is distributed under the terms of the GNU Lesser
 General Public License version 2.1. See the LICENSE file.
 
-EXECUTION
-=========
+INSTALLATION AND EXECUTION
+==========================
 
 The code is currently developed and maintained only for Linux. There are two methods to
 experiment with it.
@@ -51,9 +52,13 @@ If you have already installed Why3, Alt-Ergo, CVC4, Z3 and Coq under Linux, you 
 the proofs with Why3 ide, as follows:
 
 1. Enter the folder
+
     cd enum-master/Why3
+
 2. Start Why3 ide with Permutation1.mlw
+
     make idepermut1
+
 3. See other possible proving actions in Makefile
 
 In a Docker container
@@ -71,7 +76,7 @@ tools, as follows:
     zip enum-master.zip -d enum-master
 5. Enter the folder
     cd enum-master/Why3
-6. If you have chosen another location than your personal folder or another folder name
+   If you have chosen another location than your personal folder or another folder name
    than *enum-master*, just adapt accordingly the path ~/enum-master in the file gui.sh.
 6. Build the Docker image
     make build
@@ -81,5 +86,6 @@ tools, as follows:
 8. Run the container, attached to the terminal
     make start (you are in the Docker container)
 9. Apply steps 1-3 of the method with installed tools
+   (finally quit the container with `exit`)
 
-This execution method have been successfully tested under Linux Ubuntu 16.04, with Docker 18.03.1-ce.
+Successfully tested under Linux Ubuntu 16.04, with Docker 18.03.1-ce.

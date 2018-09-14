@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="4">
+<prover id="0" name="Alt-Ergo" version="1.30" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="1" name="Z3" version="4.7.1" timelimit="15" steplimit="0" memlimit="1000"/>
+<prover id="2" name="Coq" version="8.7.0" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="3" name="CVC4" version="1.5" timelimit="15" steplimit="0" memlimit="1000"/>
+<file name="../Permutation1.mlw" expanded="true">
+<theory name="ArrayInjection" sum="8b6350feb1990f0056a83eca51fbeeba">
+ <goal name="injective_surjective" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.00" steps="7"/></proof>
+ </goal>
+ <goal name="injection_occ" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="27"/></proof>
+ </goal>
+ <goal name="endoinjection_occ" expl="">
+ <proof prover="1" timelimit="5"><result status="valid" time="0.57"/></proof>
+ </goal>
+</theory>
+<theory name="Lex" sum="defc4f0d63c5faf743003b1c6133292f">
+ <goal name="prefix_le_lex_sub" expl="">
+ <proof prover="1" timelimit="20"><result status="valid" time="0.05"/></proof>
+ </goal>
+ <goal name="WP_parameter not_array_eq_sub" expl="VC for not_array_eq_sub">
+ <proof prover="0"><result status="valid" time="0.05" steps="136"/></proof>
+ </goal>
+ <goal name="total_order" expl="">
+ <proof prover="1"><result status="valid" time="0.45"/></proof>
+ </goal>
+</theory>
+<theory name="LexPermutation" sum="24759f70a05f669c0b87a99395198215" expanded="true">
+ <goal name="endoinj_permut" expl="">
+ <proof prover="0" timelimit="15"><result status="valid" time="0.15" steps="340"/></proof>
+ </goal>
+ <goal name="min_lex_sub" expl="">
+ <proof prover="0" timelimit="15"><result status="valid" time="1.03" steps="1006"/></proof>
+ <proof prover="1"><result status="valid" time="0.36"/></proof>
+ <proof prover="3" obsolete="true"><result status="unknown" time="15.00"/></proof>
+ </goal>
+ <goal name="max_lex_sub" expl="">
+ <proof prover="0" timelimit="15"><result status="valid" time="1.00" steps="928"/></proof>
+ <proof prover="1"><result status="valid" time="0.43"/></proof>
+ <proof prover="3" obsolete="true"><result status="unknown" time="14.98"/></proof>
+ </goal>
+</theory>
+<theory name="Permutation" sum="aff5e052d373d3533466ae4aa6b648d0" expanded="true">
+ <goal name="WP_parameter create_cursor" expl="VC for create_cursor">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.22" steps="308"/></proof>
+ </goal>
+ <goal name="split_inc_sub" expl="">
+ <proof prover="2" timelimit="5" edited="Permutation1_Permutation_split_inc_sub_1.v"><result status="valid" time="0.64"/></proof>
+ </goal>
+ <goal name="WP_parameter reverse" expl="VC for reverse">
+ <transf name="split_goal_wp">
+  <goal name="WP_parameter reverse.1" expl="loop invariant init">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="7"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.2" expl="loop invariant init">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.01" steps="7"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.3" expl="loop invariant init">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.01" steps="7"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.4" expl="loop invariant init">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="26"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.5" expl="loop invariant init">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.6" expl="loop invariant init">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.7" expl="loop invariant init">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="10"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.8" expl="type invariant">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="17"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.9" expl="precondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="30"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.10" expl="assertion">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.85" steps="795"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.11" expl="loop invariant preservation">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="25"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.12" expl="loop invariant preservation">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="25"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.13" expl="loop invariant preservation">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="25"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.14" expl="loop invariant preservation">
+  <proof prover="3" timelimit="5"><result status="valid" time="0.31"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.15" expl="loop invariant preservation">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.98" steps="828"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.16" expl="loop invariant preservation">
+  <proof prover="0" timelimit="5"><result status="valid" time="1.02" steps="839"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.17" expl="loop invariant preservation">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.06" steps="121"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.18" expl="loop variant decrease">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="25"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.19" expl="type invariant">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="17"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.20" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.01" steps="17"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.21" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="17"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.22" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.04" steps="64"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.23" expl="type invariant">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.24" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.25" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.26" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.27" expl="type invariant">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.28" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.01" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.29" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter reverse.30" expl="postcondition">
+  <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+ </transf>
+ </goal>
+ <goal name="permut_split" expl="">
+ <proof prover="3"><result status="valid" time="3.31"/></proof>
+ </goal>
+ <goal name="permut_split_imply_permut_sub" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.22" steps="130"/></proof>
+ </goal>
+ <goal name="array_eq_imply_permut" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.03" steps="38"/></proof>
+ </goal>
+ <goal name="permut_sym" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="27"/></proof>
+ </goal>
+ <goal name="permut_sub_sym" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.04" steps="119"/></proof>
+ </goal>
+ <goal name="array_eq_sub_sym" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="29"/></proof>
+ </goal>
+ <goal name="permut_trans" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="16"/></proof>
+ </goal>
+ <goal name="permut_sub_trans" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.04" steps="83"/></proof>
+ </goal>
+ <goal name="array_eq_sub_trans" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.03" steps="40"/></proof>
+ </goal>
+ <goal name="value_on_large_suffix" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.05" steps="77"/></proof>
+ </goal>
+ <goal name="value_on_strict_suffix" expl="">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.04" steps="55"/></proof>
+ </goal>
+ <goal name="inc_permut" expl="" expanded="true">
+ <proof prover="2" edited="Permutation1_Permutation_inc_permut_1.v"><result status="valid" time="2.86"/></proof>
+ </goal>
+ <goal name="WP_parameter next" expl="VC for next">
+ <transf name="split_goal_wp">
+  <goal name="WP_parameter next.1" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="5"/></proof>
+  </goal>
+  <goal name="WP_parameter next.2" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="10"/></proof>
+  </goal>
+  <goal name="WP_parameter next.3" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.06" steps="163"/></proof>
+  </goal>
+  <goal name="WP_parameter next.4" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="5"/></proof>
+  </goal>
+  <goal name="WP_parameter next.5" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="5"/></proof>
+  </goal>
+  <goal name="WP_parameter next.6" expl="loop invariant init">
+  <proof prover="0"><result status="valid" time="0.02" steps="4"/></proof>
+  </goal>
+  <goal name="WP_parameter next.7" expl="loop invariant init">
+  <proof prover="0"><result status="valid" time="0.02" steps="5"/></proof>
+  </goal>
+  <goal name="WP_parameter next.8" expl="index in array bounds">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.9" expl="index in array bounds">
+  <proof prover="0"><result status="valid" time="0.02" steps="10"/></proof>
+  </goal>
+  <goal name="WP_parameter next.10" expl="loop invariant preservation">
+  <proof prover="0"><result status="valid" time="0.02" steps="13"/></proof>
+  </goal>
+  <goal name="WP_parameter next.11" expl="loop invariant preservation">
+  <proof prover="0"><result status="valid" time="0.02" steps="45"/></proof>
+  </goal>
+  <goal name="WP_parameter next.12" expl="loop variant decrease">
+  <proof prover="0"><result status="valid" time="0.02" steps="13"/></proof>
+  </goal>
+  <goal name="WP_parameter next.13" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="12"/></proof>
+  </goal>
+  <goal name="WP_parameter next.14" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="12"/></proof>
+  </goal>
+  <goal name="WP_parameter next.15" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="12"/></proof>
+  </goal>
+  <goal name="WP_parameter next.16" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="12"/></proof>
+  </goal>
+  <goal name="WP_parameter next.17" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="12"/></proof>
+  </goal>
+  <goal name="WP_parameter next.18" expl="loop invariant init">
+  <proof prover="0"><result status="valid" time="0.02" steps="13"/></proof>
+  </goal>
+  <goal name="WP_parameter next.19" expl="loop invariant init">
+  <proof prover="0"><result status="valid" time="0.02" steps="14"/></proof>
+  </goal>
+  <goal name="WP_parameter next.20" expl="index in array bounds">
+  <proof prover="0"><result status="valid" time="0.02" steps="16"/></proof>
+  </goal>
+  <goal name="WP_parameter next.21" expl="index in array bounds">
+  <proof prover="0"><result status="valid" time="0.02" steps="17"/></proof>
+  </goal>
+  <goal name="WP_parameter next.22" expl="loop invariant preservation">
+  <proof prover="0"><result status="valid" time="0.02" steps="19"/></proof>
+  </goal>
+  <goal name="WP_parameter next.23" expl="loop invariant preservation">
+  <proof prover="0"><result status="valid" time="0.02" steps="27"/></proof>
+  </goal>
+  <goal name="WP_parameter next.24" expl="loop variant decrease">
+  <proof prover="0"><result status="valid" time="0.02" steps="19"/></proof>
+  </goal>
+  <goal name="WP_parameter next.25" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="18"/></proof>
+  </goal>
+  <goal name="WP_parameter next.26" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="19"/></proof>
+  </goal>
+  <goal name="WP_parameter next.27" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.90" steps="1048"/></proof>
+  </goal>
+  <goal name="WP_parameter next.28" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.18" steps="317"/></proof>
+  </goal>
+  <goal name="WP_parameter next.29" expl="assertion">
+  <proof prover="0"><result status="valid" time="0.34" steps="466"/></proof>
+  </goal>
+  <goal name="WP_parameter next.30" expl="type invariant">
+  <proof prover="0"><result status="valid" time="0.02" steps="27"/></proof>
+  </goal>
+  <goal name="WP_parameter next.31" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="27"/></proof>
+  </goal>
+  <goal name="WP_parameter next.32" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="27"/></proof>
+  </goal>
+  <goal name="WP_parameter next.33" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="27"/></proof>
+  </goal>
+  <goal name="WP_parameter next.34" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.03" steps="62"/></proof>
+  </goal>
+  <goal name="WP_parameter next.35" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.22" steps="525"/></proof>
+  </goal>
+  <goal name="WP_parameter next.36" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="10"/></proof>
+  </goal>
+  <goal name="WP_parameter next.37" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="15"/></proof>
+  </goal>
+  <goal name="WP_parameter next.38" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.04" steps="130"/></proof>
+  </goal>
+  <goal name="WP_parameter next.39" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="10"/></proof>
+  </goal>
+  <goal name="WP_parameter next.40" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="10"/></proof>
+  </goal>
+  <goal name="WP_parameter next.41" expl="loop invariant init">
+  <proof prover="0"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.42" expl="loop invariant init">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.43" expl="index in array bounds">
+  <proof prover="0"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.44" expl="index in array bounds">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.45" expl="loop invariant preservation">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.46" expl="loop invariant preservation">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.47" expl="loop variant decrease">
+  <proof prover="0"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.48" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.49" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.50" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.51" expl="precondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.52" expl="assertion">
+  <proof prover="0"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.53" expl="type invariant">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.54" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.55" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.56" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.01" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.57" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+  <goal name="WP_parameter next.58" expl="postcondition">
+  <proof prover="0"><result status="valid" time="0.02" steps="8"/></proof>
+  </goal>
+ </transf>
+ </goal>
+</theory>
+</file>
+</why3session>

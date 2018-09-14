@@ -1,0 +1,156 @@
+(********************************************************************)
+(* Copyright 2018 Alain Giorgetti and Rémi Lazarini                 *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+module Lex
+  use import int.Int
+  use import array.Array
+  use import array.ArrayEq
+
+  (** * Equality of sub-arrays is defined in array.ArrayEq *)
+
+  (** * Equality of initial sub-sequences a1[0..u-1] and a2[0..u-1] *)
+
+  predicate eq_prefix (a1 a2: array int) (u: int) = array_eq_sub a1 a2 0 u
+
+  (** * Lexicographic order on arrays of integers *)
+
+  (** ** Strict order *)
+
+  predicate lt_lex_sub_at (a1 a2:array int) (l u:int) (i:int) = l <= i < u /\
+    array_eq_sub a1 a2 l i /\ a1[i] < a2[i]
+
+  predicate lt_lex_suffix_at (a1 a2: array int) (l: int) (i:int) = lt_lex_sub_at a1 a2 l a1.length i
+
+  predicate lt_lex_at (a1 a2: array int) (i:int) = a1.length = a2.length /\ lt_lex_suffix_at a1 a2 0 i
+
+  predicate lt_lex_sub (a1 a2: array int) (l u: int) =
+        exists i:int. lt_lex_sub_at a1 a2 l u i
+
+  (* warning: length a1 = length a2 not checked *)
+  predicate lt_lex_suffix (a1 a2: array int) (l: int) = lt_lex_sub a1 a2 l a1.length
+
+  predicate lt_lex (a1 a2: array int) = a1.length = a2.length /\ lt_lex_suffix a1 a2 0
+
+  predicate le_lex_sub (a1 a2: array int) (l u: int) = lt_lex_sub a1 a2 l u \/
+    array_eq_sub a1 a2 l u
+
+  predicate le_lex_suffix (a1 a2: array int) (l: int) = le_lex_sub a1 a2 l a1.length
+
+  predicate le_lex (a1 a2: array int) = a1.length = a2.length /\ le_lex_suffix a1 a2 0
+
+  let rec lemma not_array_eq_sub (a b: array int) (l u: int) : unit
+    requires { 0 <= l < u <= a.length = b.length }
+    requires { not (array_eq_sub a b l u) }
+    variant  { u - l }
+    ensures  { exists i:int. l <= i < u /\ array_eq_sub a b l i /\ a[i] <> b[i] }
+  =
+    if a[l] = b[l] then not_array_eq_sub a b (l+1) u
+
+  (* Proved with Z3 4.5.1 *)
+  lemma total_order:
+    forall a b: array int, l u: int. 0 <= l < u <= a.length = b.length /\ not (lt_lex_sub b a l u) ->
+      le_lex_sub a b l u
+end
+
+(* Refinement of lexicographic order on bounded array *)
+module LexBarray
+  use import int.Int
+  use import array.Array
+  use import array.ArrayEq (* for equality array_eq_sub of sub-arrays *)
+  use export Lex
+
+  predicate is_barray_sub (a:array int) (l u:int) (b:int) =
+    forall i:int. l <= i < u -> 0 <= a[i] < b
+
+  predicate is_barray (a:array int) (b:int) = is_barray_sub a 0 a.length b
+
+  (* a is the smallest barray in lexicographic order *)
+  predicate min_lex (a: array int) (bound:int) =
+  forall b: array int. a.length = b.length /\ is_barray b bound ->  le_lex_sub a b 0 a.length
+
+  (* a is the tallest barray in lexicographic order *)
+  predicate max_lex (a: array int) (bound:int) =
+  forall b: array int. a.length = b.length /\ is_barray b bound ->  le_lex_sub b a 0 a.length
+
+  (* (inc a1 a2) holds iff a2 is the smallest array larger than a1 *)
+  predicate inc (a1 a2: array int) (b: int) = a1.length = a2.length /\
+    lt_lex_sub a1 a2 0 a1.length /\ forall a3: array int. a3.length = a1.length /\
+      is_barray a3 b /\ lt_lex_sub a1 a3 0 a1.length -> le_lex_sub a2 a3 0 a1.length
+
+end
+
+(* Enumeration of arrays of integers with values in [0..b-1] for some bound b. *)
+module Barray
+  use import int.Int
+  use import ref.Ref
+  use import array.Array
+  use import array.ArrayEq
+  use import LexBarray
+
+  predicate cte_array_sub (a:array int) (l u:int) (b:int) = forall i:int. l <= i < u -> a[i] = b
+
+  predicate cte_array (a:array int) (b:int) = cte_array_sub a 0 a.length b
+
+  predicate suffix_max (a:array int) (r b:int) = forall i:int. r < i < a.length -> a[i] = b - 1
+
+  type cursor = {
+        current: array int; (* current array *)
+          bound: int;       (* strict upper bound for array values *)
+    mutable new: bool;      (* true iff current is a new array *)
+  }
+
+  predicate sound (c: cursor) = is_barray c.current c.bound
+
+  let create_cursor (n b: int) : cursor
+    requires { n >= 0 }
+    requires { b > 0 }
+    ensures  { length result.current = n }
+    ensures  { result.bound = b }
+    ensures  { min_lex result.current result.bound }
+    ensures  { sound result }
+  = let a = make n 0 in
+    { current = a; bound = b; new = true }
+
+
+  let next (c: cursor) : unit
+    requires { sound c }
+    ensures  { sound c }
+    ensures  { c.current.length = (old c).current.length }
+    ensures  { c.new -> lt_lex (old c.current) c.current }
+    ensures  { c.new -> inc (old c.current) c.current c.bound }
+    ensures  { not c.new -> array_eq (old c.current) c.current }
+    ensures  { not c.new -> max_lex c.current c.bound }
+  = 'L:
+    let a = c.current in
+    let n = a.length in
+    let b = c.bound in
+    let r = ref (n-1) in (* Find the rightmost index !r s.t. a[!r] < b-1: *)
+    while !r >= 0 && a[!r] >= b-1 do
+      invariant { -1 <= !r <= n-1 }
+      invariant { suffix_max a !r b }
+      variant   { !r + 1 }
+      r := !r - 1
+    done;
+    if (!r < 0) then (* Last array reached. *)
+      c.new <- false
+    else begin
+      a[!r] <- a[!r] + 1;
+      (* Fill the suffix starting at a[!r+1] with zeros: *)
+      for i = !r+1 to n-1 do
+        invariant { !r+1 <= i <= n }
+        invariant { lt_lex_at (at a 'L) a !r }
+        invariant { cte_array_sub a (!r+1) i 0 }
+        invariant { (at c.current 'L)[!r]+1 = c.current[!r] }
+        a[i] <- 0
+      done;
+      c.new <- true
+    end
+
+end

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="4">
+<prover id="0" name="Alt-Ergo" version="1.30" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="1" name="Z3" version="4.7.1" timelimit="20" steplimit="0" memlimit="1000"/>
+<file name="../Barray.mlw" expanded="true">
+<theory name="Lex" sum="d46596ab7c925fa09d5a70c1a5b86763" expanded="true">
+ <goal name="WP_parameter not_array_eq_sub" expl="VC for not_array_eq_sub">
+ <proof prover="0"><result status="valid" time="0.05" steps="136"/></proof>
+ </goal>
+ <goal name="total_order" expl="">
+ <proof prover="1"><result status="valid" time="4.77"/></proof>
+ </goal>
+</theory>
+<theory name="LexBarray" sum="d41d8cd98f00b204e9800998ecf8427e" expanded="true">
+</theory>
+<theory name="Barray" sum="86b625872d6802e57d5ed9c06627d53f" expanded="true">
+ <goal name="WP_parameter create_cursor" expl="VC for create_cursor">
+ <proof prover="0"><result status="valid" time="0.02" steps="101"/></proof>
+ </goal>
+ <goal name="WP_parameter next" expl="VC for next">
+ <proof prover="0" obsolete="true"><result status="valid" time="4.58" steps="2742"/></proof>
+ <proof prover="1"><result status="valid" time="0.20"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>

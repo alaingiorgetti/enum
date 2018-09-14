@@ -47,7 +47,6 @@ RUN sudo chown "opam":"opam" /home/opam/app/why3-0.88.2 -R && \
  sudo chmod g+rwx "/home/opam/app/why3-0.88.2" -R && \
  ls -al /home/opam/app
 
-# coqc not found without '. ~/.profile &&'
 RUN . ~/.profile && cd /home/opam/app/why3-0.88.2 && ./configure && make && sudo make install
 
 # Installation of Why3 API
@@ -62,10 +61,10 @@ RUN . ~/.profile && cd /home/opam/app/why3-0.88.2 && ./configure && make && sudo
 RUN sudo apt-get install -y libocamlgraph-ocaml-dev libzarith-ocaml libzarith-ocaml-dev libcreal-ocaml-dev
 RUN sudo apt-get install -qq -yy autoconf
 RUN opam install camlzip
-# Installation Alt-Ergo 1.30 via opam
+# Installation of Alt-Ergo 1.30 via opam
 RUN opam install alt-ergo
 
-# Installation Z3 4.7.1 from source
+# Installation of Z3 4.7.1 from source
 RUN sudo wget https://github.com/Z3Prover/z3/archive/z3-4.7.1.tar.gz \
     && sudo tar xzvf z3-4.7.1.tar.gz \
     && cd z3-z3-4.7.1 && sudo python scripts/mk_make.py \
@@ -74,7 +73,7 @@ RUN sudo wget https://github.com/Z3Prover/z3/archive/z3-4.7.1.tar.gz \
 # Required for CVC4
 RUN sudo apt-get install -y libboost-all-dev libreadline-dev
 
-# Installation CVC4 1.5 from source
+# Installation of CVC4 1.5 from source
 RUN sudo wget http://cvc4.cs.stanford.edu/downloads/builds/src/cvc4-1.5.tar.gz \
     && sudo tar xzvf cvc4-1.5.tar.gz \
     && cd cvc4-1.5 && sudo contrib/get-antlr-3.4 \

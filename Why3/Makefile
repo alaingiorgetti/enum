@@ -8,12 +8,7 @@
 #  General Public License version 2.1                                #
 ######################################################################
 
-.PHONY: zip idebarray idepermut idepermut1 build start
-
-zip: Barray/* Permutation/* Permutation1/* Barray.mlw Permutation.mlw Permutation1.mlw \
-     Dockerfile gui.sh GL18afadl.pdf GL18extended.pdf LICENSE README Makefile
-	rm -f gl18.zip
-	zip gl18.zip $^
+.PHONY: idebarray idepermut idepermut1 build start
 
 # start why3 ide with Barray.mlw
 idebarray:

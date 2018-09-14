@@ -1,3 +1,3 @@
 # gui.sh
 docker create -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v ~/gl18:/home/opam/app/gl18 --name="proof" proof
+  -v ~/enum-master:/home/opam/app/enum-master --name="proof" proof

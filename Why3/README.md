@@ -26,7 +26,7 @@ of permutations. This proof is described in [GL18ext].
 The folders Barray, Permutation and Permutation1 contain the "why3 session" files.
 
 The Dockerfile contains commands to build a Docker image to install all the tools (under 
-Linux Ubuntu 16/04) and replay the proofs.
+Linux Ubuntu 16.04) and replay the proofs.
 
 The file gui.sh is a bash script to create the Docker container.
 
@@ -37,7 +37,6 @@ Copyright 2018 Alain Giorgetti and Rémi Lazarini, FEMTO-ST institute
 
 This software is distributed under the terms of the GNU Lesser
 General Public License version 2.1. See the LICENSE file.
-
 
 EXECUTION
 =========
@@ -51,13 +50,11 @@ With installed tools
 If you have already installed Why3, Alt-Ergo, CVC4, Z3 and Coq under Linux, you can try to replay
 the proofs with Why3 ide, as follows:
 
-1. Extract the archive
-    zip gl18.zip -d gl18
-2. Enter the folder
-    cd gl18
-3. Start Why3 ide with Permutation1.mlw
+1. Enter the folder
+    cd enum-master/Why3
+2. Start Why3 ide with Permutation1.mlw
     make idepermut1
-4. See other possible proving actions in Makefile
+3. See other possible proving actions in Makefile
 
 In a Docker container
 ---------------------
@@ -66,20 +63,23 @@ If the former method fails, you can create a Docker container with compatible re
 tools, as follows:
 
 1. If Docker is not installed, follow the instructions at
-    https://docs.docker.com/install/linux/docker-ce/ubuntu/
+   [https://docs.docker.com/install/linux/docker-ce/ubuntu/](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
    to install Docker
-2. Copy gl18.zip in your personal folder (~/)
+2. Copy enum-master.zip in your personal folder (~/)
 3. Open a terminal in your personal folder
 4. Extract the archive
-    zip gl18.zip -d gl18
+    zip enum-master.zip -d enum-master
 5. Enter the folder
-    cd gl18
+    cd enum-master/Why3
+6. If you have chosen another location than your personal folder or another folder name
+   than *enum-master*, just adapt accordingly the path ~/enum-master in the file gui.sh.
 6. Build the Docker image
     make build
-7. Create the Docker container
+7. Create the Docker container. Its folder /home/opam/app/enum-master/ will contain
+   a complete copy of the project.
     bash gui.sh
 8. Run the container, attached to the terminal
     make start (you are in the Docker container)
-9. Apply steps 2-4 of method 3.1
+9. Apply steps 1-3 of the method with installed tools
 
 This execution method have been successfully tested under Linux Ubuntu 16.04, with Docker 18.03.1-ce.

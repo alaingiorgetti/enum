@@ -18,8 +18,8 @@ The files GL18afadl.pdf [GL18] and GL18extended.pdf [GL18ext] (in French) are a
 published paper and its extended version with an interactive proof of completeness 
 of the generator of permutations.
 
-The files Permutation.mlw and Barray.mlw contain the generators of permutations
-and bounded arrays presented in [GL18].
+The files Barray.mlw and Permutation.mlw respectively contain the generators of bounded arrays
+and permutations presented in [GL18].
 
 The file Permutation1.mlw contains more specifications to prove completeness of the generator
 of permutations. This proof is described in [GL18ext].
@@ -77,7 +77,7 @@ tools, as follows:
 
 4. Extract the archive:
 
-    zip enum-master.zip -d enum-master
+    unzip enum-master.zip
 
 5. Enter the folder:
 

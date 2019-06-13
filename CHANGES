@@ -1,0 +1,31 @@
+Library enum
+
+Version 1.0, TODO
+===========================
+
+URL
+
+For Coq 6.?
+
+Version 1.1, TODO
+===========================
+
+URL
+
+For Coq 6.?
+
+Version 1.2, TODO
+===========================
+
++ New file INSTALL for installation.
+
+- Adaptation to Coq 8.?
+
+o Folder Why3 as in enum 1.1
+
+o Folder cACSL from enum 1.0, completed by ..
+
++ Installation with Docker documented in INSTALL.md.
+
++ Dockerfile.
+

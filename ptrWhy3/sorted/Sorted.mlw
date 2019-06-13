@@ -1,0 +1,114 @@
+(***************************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti.                  *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+module Sorted
+
+  use int.Int
+  use array.Array
+  use mach.int.Int32
+  use Barray.Barray
+  use lexgen.Cursor
+
+  predicate is_inc1_sub (a: array int32) (l u:int) =
+    forall i:int. l <= i < u -> a[i-1] <= a[i]
+
+  predicate is_inc1 (a: array int32) =
+    forall i:int. 1 <= i < a.length -> a[i-1] <= a[i]
+
+  predicate is_sorted (a: array int32) (k: int32) =
+    is_barray a k /\ is_inc1 a
+
+  let function b_inc1 (a: array int32) (n: int32) : bool
+    requires { n = a.length }
+    ensures { result <-> is_inc1 a }
+  =
+    for i = 1 to n-1 do
+      invariant { is_inc1_sub a 1 i }
+      if not (a[i-1] <= a[i]) then return false
+    done;
+    true
+
+  let function b_sorted (a: array int32) (n k: int32) : bool
+    requires { n = a.length }
+    ensures { result <-> is_sorted a k }
+  =
+    b_barray a n k && b_inc1 a n
+
+end
+
+
+module Enum
+
+  use int.Int
+  use array.Array
+  use array.ArrayEq
+  use arrayExtension.Cte
+  use Sorted
+  use mach.int.Int32
+  use mach.c.C
+  use lex.Lex32
+  use lexgen.Cursor
+
+  clone export lexgen.LexIntXX with
+    predicate is_XX = is_sorted
+
+  let partial create_cursor (n k: int32) : cursor
+    requires { 0 < n /\ 0 < k }
+    ensures  { not result.freed }
+    ensures  { length result.current.data = n }
+    ensures  { result.len = n }
+    ensures  { cte result.current.data 0 }
+    ensures  { min_lex result.current.data k }
+    ensures  { sound result k }
+  =
+    let a = malloc (UInt32.of_int32 n) in
+    c_assert (is_not_null a);
+    for i = 0 to n-1 do
+      invariant { cte_sub a.data 0 i 0 }
+      set_ofs a i 0;
+    done;
+    { current = a; new = true; len = n; freed = false }
+
+  let next (c: cursor) (k: int32) : unit
+    requires { not c.freed }
+    requires { 0 < k }
+    requires { sound c k }
+    ensures  { sound c k }
+    ensures  { length c.current.data = length (old c.current.data) }
+    ensures  { c.new -> lt_lex (old c.current.data) c.current.data }
+    ensures  { c.new -> inc (old c.current.data) c.current.data k }
+    ensures  { not c.new -> max_lex c.current.data k }
+    ensures  { not c.new -> array_eq (old c.current.data) c.current.data }
+  =
+    let a = get_current c in
+    label L in
+    let n = c.len in
+    let ref r = (n-1) in
+    while r >= 0 && a[r] = k-1 do
+      invariant { -1 <= r < n }
+      invariant { cte_sub a (r+1) n (k-1) }
+      variant { r + 1 }
+      r <- r - 1
+    done;
+    if (r < 0) then
+      c.new <- false
+    else begin
+      a[r] <- a[r] + 1;
+      for i = r+1 to n-1 do
+        invariant { r+1 <= i <= n }
+        invariant { (a at L)[r]+1 = a[r] }
+        invariant { cte_sub a (r+1) i a[r] }
+        invariant { lt_lex_at (a at L) a r }
+        a[i] <- a[r]
+      done;
+      c.new <- true;
+      end
+
+end

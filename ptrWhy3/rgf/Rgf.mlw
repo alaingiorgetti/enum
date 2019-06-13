@@ -1,0 +1,115 @@
+(***************************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti                   *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+module Rgf
+
+  use int.Int
+  use array.Array
+  use mach.int.Int32
+  use lexgen.Cursor
+
+  predicate is_rgf_sub (a:array int32) (l u: int) = a[0] = 0 /\
+    forall i:int. l <= i < u -> 0 <= a[i] <= a[i-1]+1
+
+  predicate is_rgf (a:array int32) = a.length = 0 \/ is_rgf_sub a 1 a.length
+
+  let function b_rgf (a: array int32) (n: int32) : bool
+    requires { n = a.length }
+    requires { forall i:int. 0 <= i < n -> in_bounds (a[i] + 1) }
+    ensures  { result <-> is_rgf a }
+  =
+    if n = 0 then
+      return true
+    else
+      if a[0] <> 0 then
+        return false
+      else
+      for i = 1 to n - 1 do
+          invariant { is_rgf_sub a 1 i }
+          if not (0 <= a[i] <= a[i-1]+1) then return false
+      done;
+      true
+
+end
+
+
+module Enum
+
+  use int.Int
+  use array.Array
+  use array.ArrayEq
+  use arrayExtension.Inc
+  use arrayExtension.Cte
+  use mach.int.Int32
+  use mach.c.C
+  use Rgf
+  use lex.Lex32
+  use lexgen.Cursor
+
+  clone export lexgen.LexXX with
+    predicate is_XX = is_rgf
+
+  let partial create_cursor (n: int32) : cursor
+    requires { 0 < n }
+    ensures  { not result.freed }
+    ensures  { length result.current.data = n }
+    ensures  { result.len = n }
+    ensures  { cte result.current.data 0 }
+    ensures  { min_lex result.current.data }
+    ensures  { sound result }
+  =
+    let a = malloc (UInt32.of_int32 n) in
+    c_assert (is_not_null a);
+    for i = 0 to n-1 do
+      invariant { cte_sub a.data 0 i 0 }
+      set_ofs a i 0;
+    done;
+    { current = a; new = true; len = n; freed = false }
+
+
+  let next (c: cursor) : unit
+    requires { not c.freed }
+    requires { sound c }
+    requires { forall i:int. 0 <= i < c.len -> in_bounds (c.current.data[i] + 1) }
+    ensures  { sound c }
+    ensures  { length c.current.data = length (old c.current.data) }
+    ensures  { c.new -> lt_lex (old c.current.data) c.current.data }
+    ensures  { c.new -> inc (old c.current.data) c.current.data }
+    ensures  { not c.new -> max_lex c.current.data }
+    ensures  { not c.new -> array_eq (old c.current.data) c.current.data }
+  =
+    let a = get_current c in
+    label L in
+    let n = c.len in
+    if n <= 1 then
+      c.new <- false
+    else
+    let ref r = (n-1) in
+    while r >= 1 && a[r] = a[r-1]+1 do
+      invariant { 0 <= r <= n-1 }
+      invariant { is_inc_sub a r n }
+      variant   { r + 1 }
+      r <- r - 1
+    done;
+    if (r = 0) then (* Last array reached. *)
+      c.new <- false
+    else begin
+      a[r] <- a[r] + 1;
+      for i = r+1 to n-1 do
+        invariant { r+1 <= i <= n }
+        invariant { lt_lex_sub_at (a at L) a 0 n r }
+        invariant { cte_sub a (r+1) i 0 }
+        invariant { (data c.current at L)[r]+1 = (data c.current)[r] }
+        a[i] <- 0
+      done;
+      c.new <- true
+    end
+
+end

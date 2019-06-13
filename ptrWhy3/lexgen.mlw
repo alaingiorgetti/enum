@@ -1,0 +1,111 @@
+(***************************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti                   *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+module Cursor
+
+  use int.Int
+  use array.Array
+  use map.MapEq
+  use mach.int.Int32
+  use mach.c.C
+
+  (* The contents of this module is provided by R. Rieu-Helft *)
+
+  val ghost dummy_nonnull () : ptr int32
+    ensures { is_not_null result /\ plength result = 1 /\ offset result = 0 }
+    ensures { min result = 0 /\ max result = plength result }
+    ensures { result.data[0] = 0 }
+
+  type cursor = {
+    current : ptr int32;
+    len : int32;
+    mutable new : bool;
+    ghost mutable freed : bool
+    }
+    invariant { 0 < len }
+    invariant { not freed ->
+                (plength current = len /\
+                offset current = 0 /\
+                valid current len /\
+                min current = 0 /\
+                max current = len /\
+                is_not_null current) }
+    by { current = dummy_nonnull (); new = true;
+         len = 1; freed = false }
+
+  val get_current (c: cursor) : array int32
+    requires { not c.freed }
+    ensures { length result = plength c.current }
+    ensures { map_eq_sub result.elts c.current.pelts 0 c.len }
+    alias   { c.current.data with result }
+
+  val ([]) (a: array 'a) (i: int32) : 'a
+    requires { [@expl:index in array bounds] 0 <= i < length a }
+    ensures  { result = ([]) a i }
+
+  val ([]<-) (a: array 'a) (i: int32) (v: 'a) : unit 
+    writes { a }
+    requires { [@expl:index in array bounds] 0 <= i < length a }
+    ensures  { a.elts = Map.set (old a).elts i v }
+    ensures  { a = ([<-]) (old a) i v }
+
+end
+
+
+(** {Refinement of lexicographic order} *)
+
+module LexXX
+
+  use array.Array
+  use mach.int.Int32
+  use mach.c.C
+  use lex.Lex32
+  use Cursor
+
+  predicate is_XX (a: array int32)
+
+  predicate sound (c: cursor) = is_XX (data c.current)
+
+  predicate min_lex (a: array int32) =
+    forall b: array int32. a.length = b.length /\ is_XX b -> le_lex_sub a b 0 a.length
+
+  predicate max_lex (a: array int32) =
+    forall b: array int32. a.length = b.length /\ is_XX b -> le_lex_sub b a 0 a.length
+
+  predicate inc (a1 a2: array int32) = lt_lex a1 a2 /\
+    forall a3: array int32. lt_lex a1 a3 /\ is_XX a3 -> le_lex a2 a3
+
+end
+
+
+(** {Refinement of lexicographic order with an integer parameter} *)
+
+module LexIntXX
+
+  use array.Array
+  use mach.int.Int32
+  use mach.c.C
+  use lex.Lex32
+  use Cursor
+
+  predicate is_XX (a: array int32) (k: int32)
+
+  predicate sound (c: cursor) (k: int32) = is_XX c.current.data k
+
+  predicate min_lex (a: array int32) (k: int32) =
+    forall b: array int32. a.length = b.length /\ is_XX b k -> le_lex_sub a b 0 a.length
+
+  predicate max_lex (a: array int32) (k: int32) =
+    forall b: array int32. a.length = b.length /\ is_XX b k -> le_lex_sub b a 0 a.length
+
+  predicate inc (a1 a2: array int32) (k: int32) = lt_lex a1 a2 /\
+    forall a3: array int32. lt_lex a1 a3 /\ is_XX a3 k -> le_lex a2 a3
+
+end

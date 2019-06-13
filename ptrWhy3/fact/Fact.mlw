@@ -1,0 +1,102 @@
+(********************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti            *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+module Fact
+
+  use int.Int
+  use array.Array
+  use mach.int.Int32
+  use lexgen.Cursor
+
+  predicate is_fact_sub (a:array int32) (l u:int) = 
+    forall i:int. l <= i < u -> 0 <= a[i] <= i
+  
+  predicate is_fact (a:array int32) = is_fact_sub a 0 a.length
+  
+  let function b_fact (a: array int32) (n: int32) : bool
+    requires { n = a.length }
+    ensures { result <-> is_fact a }
+  =
+    for i = 0 to n - 1 do
+      invariant { is_fact_sub a 0 i }
+      if not (0 <= a[i] <= i) then return false
+    done;
+    true
+
+end
+
+
+module Enum
+
+  use int.Int
+  use array.Array
+  use array.ArrayEq
+  use mach.int.Int32
+  use mach.c.C
+  use lex.Lex32
+  use lexgen.Cursor
+  use arrayExtension.Cte
+  use arrayExtension.Id
+  use Fact
+  
+  clone export lexgen.LexXX with
+    predicate is_XX = is_fact
+    
+  let partial create_cursor (n: int32) : cursor
+    requires { 0 < n }
+    ensures  { not result.freed }
+    ensures  { length result.current.data = n }
+    ensures  { result.len = n }
+    ensures  { cte result.current.data 0 }
+    ensures  { min_lex result.current.data }
+    ensures  { sound result }
+  = 
+    let a = malloc (UInt32.of_int32 n) in
+    c_assert (is_not_null a);
+    for i = 0 to n-1 do
+      invariant { cte_sub a.data 0 i 0 }
+      set_ofs a i 0;
+    done;
+    { current = a; new = true; len = n; freed = false } 
+
+  let next (c: cursor) : unit
+    requires { not c.freed }
+    requires { sound c}
+    ensures  { sound c}
+    ensures  { length c.current.data = length (old c.current.data) }
+    ensures  { c.new -> lt_lex (old c.current.data) c.current.data }
+    ensures  { c.new -> inc (old c.current.data) c.current.data }
+    ensures  { not c.new -> max_lex c.current.data }
+    ensures  { not c.new -> array_eq (old c.current.data) c.current.data }
+  =
+    let a = get_current c in
+    label L in
+    let n = c.len in
+    let ref r = (n-1) in
+    while r >= 0 && a[r] = r do
+      invariant { -1 <= r <= n-1 }
+      invariant { is_id_sub a (r+1) n }
+      variant { r + 1 }
+      r <- r - 1
+    done;
+    if (r < 0) then (* Last array reached. *)
+      c.new <- false
+    else begin
+      a[r] <- a[r] + 1;
+      for i = r+1 to n-1 do
+        invariant { r+1 <= i <= n }
+        invariant { (a at L)[r]+1 = a[r] }
+        invariant { cte_sub a (r+1) i 0 }
+        invariant { lt_lex_at (a at L) a r }
+        a[i] <- 0
+      done;
+      c.new <- true;
+    end
+    
+end

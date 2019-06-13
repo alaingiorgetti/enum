@@ -1,0 +1,35 @@
+###############################################################################
+# Copyright (C) 2014-19 Richard Genestier, Alain Giorgetti and Clotilde Erard #
+# FEMTO-ST institute                                                          #
+###############################################################################
+
+###############################################################################
+#  This software is distributed under the terms of the GNU Lesser             #
+#  General Public License version 2.1                                         #
+###############################################################################
+
+# File: cACSL/Makefile2
+
+.PHONY: compile test wp clean
+
+# Compilation of all the C files
+compile:
+	cd fcts; make
+	cd fxtbook; make compile
+	cd generation; make compile
+
+# Execution of an exhaustive enumeration for each generator
+test: compile
+	cd fxtbook; make test
+	cd generation; make test
+
+# Proofs of all generators and functions
+wp:
+	cd fxtbook; make wp
+	cd generation; make wp
+
+# Cleaning
+clean:
+	cd fcts; make clean
+	cd fxtbook; make clean
+	cd generation; make clean

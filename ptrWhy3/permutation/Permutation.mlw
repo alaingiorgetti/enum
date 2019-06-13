@@ -1,0 +1,162 @@
+(********************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti            *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+module Permutation
+
+  use int.Int
+  use array.Array
+  use array.ArrayPermut
+  use arrayExtension.ArrayInjection
+  use export arrayExtension.Inc
+  use export arrayExtension.Dec
+  use mach.int.Int32
+  use lex.Lex32
+
+  predicate is_permut (a:array int32) = range a /\ injective a
+
+  let function b_permut (a:array int32) (n: int32) : bool
+    requires { n = a.length }
+    ensures  { result <-> is_permut a }
+  =
+    b_range a n && b_injective a n
+
+  (* These two predicates specify that a[k] is the smallest value bigger than 
+     a[r] in the array a[r+1..a.length-1]: *)
+  predicate im_sup1 (a: array int32) (r k:int) =
+    forall i:int. r < i < k -> a[k] < a[i]
+
+  predicate im_sup2 (a: array int32) (r k:int) =
+    forall i:int. k < i < a.length -> a[i] < a[r]
+
+  (** not proved **)
+  (*lemma endoinj_permut: forall a b: array int32.
+    0 <= a.length = b.length /\ is_permut a /\ is_permut b
+    -> permut a b 0 a.length
+
+  lemma min_lex_sub: forall a: array int32, l u: int.
+    0 <= l < u <= a.length /\ injective a /\ is_inc_sub a l u
+    -> forall b:array int32. permut a b l u /\ injective b
+    -> le_lex_sub a b l u
+
+  lemma max_lex_sub: forall a: array int32, l u: int.
+    0 <= l < u <= a.length /\ injective a /\ is_dec_sub a l u
+    -> forall b:array int32. permut a b l u /\ injective b
+    -> le_lex_sub b a l u*)
+
+end
+
+
+module Enum
+
+  use int.Int
+  use array.Array
+  use array.ArrayEq
+  use array.ArrayPermut
+  use arrayExtension.Id
+  use Permutation 
+  use mach.int.Int32
+  use mach.c.C
+  use lex.Lex32
+  use lexgen.Cursor
+
+  clone export lexgen.LexXX with
+    predicate is_XX = is_permut
+
+   let partial create_cursor (n: int32) : cursor
+    requires { 0 < n }
+    ensures  { not result.freed }
+    ensures  { length result.current.data = n }
+    ensures  { result.len = n }
+    ensures  { is_id result.current.data }
+    (*ensures  { min_lex result.current.data }*)
+    ensures  { sound result }
+    ensures  { result.new }
+  =
+    let a = malloc (UInt32.of_int32 n) in
+    c_assert (is_not_null a);
+    for i = 0 to n-1 do
+      invariant { 0 <= i <= n }
+      invariant { is_id_sub a.data 0 i }
+      set_ofs a i i;
+    done;
+    assert { is_inc a.data };
+    { current = a; new = true; len = n; freed = false }
+
+  let swap (a:array int32) (i j: int32) : unit
+    requires { 0 <= i < length a /\ 0 <= j < length a }
+    writes   { a }
+    ensures  { exchange (old a) a i j }
+  =
+    let v = a[i] in
+    a[i] <- a[j];
+    a[j] <- v
+
+  let reverse (a: array int32) (l u: int32) : unit
+    requires { 0 <= l < u <= a.length }
+    requires { is_permut a }
+    requires { is_dec_sub a l u }
+    ensures  { is_permut a }
+    ensures  { permut_sub (old a) a l u }
+    (*ensures  { is_inc_sub a l u }*)      (** not proved **)
+  =
+    label L in
+    let ref x = l in
+    let ref y = (u-1) in
+    while x < y do
+      invariant { l <= x < u }
+      invariant { l <= y < u }
+      invariant { is_permut a }
+      invariant { permut_sub (a at L) a l u }
+      (*invariant { is_inc_sub a l (x+1) }       (** not proved **)
+      invariant { is_inc_sub a y u }*)           (** not proved **)
+      invariant { array_eq_sub (a at L) a x (y+1) }
+      variant   { y - x }
+      swap a x y;
+      y <- y - 1;
+      x <- x + 1
+    done
+
+  let next (c: cursor) : unit
+    requires { not c.freed }
+    requires { sound c }
+    ensures  { sound c }
+    ensures  { not c.new -> array_eq (old c.current.data) c.current.data }
+    ensures  { c.new -> lt_lex (old c.current.data) c.current.data }
+    (*ensures  { not c.new -> max_lex c.current.data }              (** not proved **)
+    ensures  { c.new -> inc (old c.current.data) c.current.data }*) (** not proved **)
+  =
+    let a = get_current c in
+    let n = c.len in
+    label L in
+    if n <= 1 then
+      c.new <- false
+    else
+      let ref r = (n-2) in
+      while r >= 0 && a[r] > a[r+1] do
+        invariant { -1 <= r <= n-2 }
+        invariant { is_dec_sub a (r+1) n }
+        variant   { r + 1 }
+        r <- r - 1
+      done;
+      if r < 0 then (* last array reached. *)
+        c.new <- false
+      else
+        let ref j = (n-1) in
+        while a[r] > a[j] do
+          invariant { r + 1 <= j <= n-1 }
+          invariant { im_sup2 a r j }
+          variant   { j }
+          j <- j - 1
+        done;
+        swap a r j;
+        reverse a (r+1) n;
+        c.new <- true
+
+end

@@ -1,0 +1,9 @@
+/* Kindly provided by R. Rieu-Helft. */
+
+module lexgen.Cursor
+
+  syntax val ([]) "%1[%2]"
+  syntax val ([]<-) "%1[%2] = %3"
+  syntax val get_current "%1->current"
+
+end

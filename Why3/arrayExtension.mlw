@@ -1,0 +1,185 @@
+(***************************************************************************)
+(* Copyright (C) 2018-19 Clotilde Erard, Alain Giorgetti and Rémi Lazarini *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+(* Extensions of stdlib/array.mlw *)
+
+module Array
+
+  use int.Int
+  use array.Array
+
+  let copy (a b: array int) : unit
+    requires { b.length = a.length }
+    ensures  { forall i. 0 <= i < a.length -> b[i] = a[i] }
+  =
+    for i = 0 to a.length-1 do
+      invariant { forall j. 0 <= j < i -> b[j] = a[j] }
+      b[i] <- a[i]
+    done
+
+end
+
+(** Restriction of map.MapInjection to arrays. *)
+
+theory ArrayInjection
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use map.MapInjection as M
+  use map.Occ
+
+  predicate injective (a: array int) = M.injective a.elts a.length
+  predicate surjective (a: array int) = M.surjective a.elts a.length
+  predicate range (a: array int) = M.range a.elts a.length
+
+  lemma injective_surjective: forall a: array int.
+    injective a -> range a -> surjective a
+
+  lemma injection_occ: forall a: array int.
+    injective a <-> forall v:int. (occ v a.elts 0 a.length <= 1)
+
+  lemma endoinjection_occ: [@split_all_full] forall a: array int. 
+    M.range (a.elts) a.length /\ injective a
+    -> forall v:int. 0 <= v < a.length
+    -> occ v a.elts 0 a.length = 1
+
+  let predicate in_interval (x l u: int) = l <= x < u
+
+  (* The following two predicates could be generalized to maps and added to 
+     module MapInjection in stdlib/map.mlw. *)
+  predicate range_sub (a: array int) (l u b: int) = forall i: int.
+    l <= i < u -> in_interval a[i] 0 b
+
+  predicate inj_sub (a: array int) (l u: int) = forall i: int.
+    l <= i < u -> forall j: int. l <= j < u -> i <> j -> a.elts i <> a.elts j
+
+  (* The following predicates and Boolean functions 
+     are used for BET in generator/permutation/Permutation.mlw *) 
+  predicate diff_sub (a: array int) (i: int) (u: int) =
+    forall j: int. 0 <= j < u -> i <> j -> a[i] <> a[j]
+
+  predicate diff (a: array int) (i: int) =
+    forall j: int. 0 <= j < a.length -> i <> j -> a[i] <> a[j]
+
+  let function b_diff (a: array int) (i: int) : bool
+    requires { 0 <= i < a.length }
+    ensures { result <-> diff a i }
+  =
+    let n = a.length in
+    for j = 0 to n - 1 do
+      invariant { diff_sub a i j }
+      if (a[j] = a[i] && j <> i) then return false
+    done;
+    true
+
+  predicate inj_sub2 (a: array int) (u: int) =
+    forall i: int. 0 <= i < u -> diff a i
+
+  let function b_inj (a: array int) : bool
+    ensures { result <-> injective a }
+  =
+    let n = a.length in
+    for j = 0 to n - 1 do
+      invariant { inj_sub2 a j }
+      if not (b_diff a j) then return false
+    done;
+    true
+
+  let function b_range (a: array int) : bool
+    ensures { result <-> range a }
+  =
+    let n = a.length in
+    for j = 0 to n - 1 do
+      invariant { range_sub a 0 j n }
+      if not (in_interval a[j] 0 n) then return false
+    done;
+    true
+
+end
+
+
+module ToList
+
+  use int.Int
+  use array.Array
+  use array.ArrayEq
+  use list.List
+
+
+  let rec to_list_sub (a: array 'a) (l u: int) : list 'a
+    requires { 0 <= l <= u <= a.length }
+    variant  { u - l }
+  = if u <= l then Nil else Cons a[l] (to_list_sub a (l+1) u)
+
+  let to_list (a: array 'a) : list 'a = to_list_sub a 0 a.length
+
+end
+
+
+module Cte
+
+  use int.Int
+  use array.Array
+
+  predicate cte_sub (a: array int) (l u b: int) =
+    forall i:int. l <= i < u -> a[i] = b
+
+  predicate cte (a: array int) (b: int) = cte_sub a 0 a.length b
+
+end
+
+
+module Id
+
+  use int.Int
+  use array.Array
+
+  predicate is_id_sub (a: array int) (l u: int) =
+    forall i:int. l <= i < u -> a[i] = i
+
+  predicate is_id (a: array int) = is_id_sub a 0 a.length
+
+end
+
+
+module Inc
+
+  use int.Int
+  use array.Array
+
+  predicate is_inc_sub (a: array int) (l u: int) =
+    forall i j:int. l <= i < j < u -> a[i] < a[j]
+
+  predicate is_inc (a: array int) = is_inc_sub a 0 a.length
+
+  let function b_inc (a: array int) : bool
+    ensures { result <-> is_inc a }
+  =
+    let n = a.length in
+    for i = 1 to n-1 do
+      invariant { is_inc_sub a 0 i }
+      if not (a[i-1] < a[i]) then return false
+    done;
+    true
+
+end
+
+
+module Dec
+
+  use int.Int
+  use array.Array
+
+  predicate is_dec_sub (a: array int) (l u:int) =
+    forall i j:int. l <= i < j < u -> a[j] < a[i]
+
+  predicate is_dec (a: array int) = is_dec_sub a 0 a.length
+
+end

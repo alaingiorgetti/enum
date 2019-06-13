@@ -1,0 +1,202 @@
+(***************************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti                   *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+module Rgf
+
+  use int.Int
+  use array.Array
+
+  predicate is_rgf_sub (a:array int) (l u:int) = a[0] = 0 /\ 
+    forall i:int. l <= i < u -> 0 <= a[i] <= a[i-1]+1
+
+  predicate is_rgf (a:array int) = a.length = 0 \/ is_rgf_sub a 1 a.length
+
+  let function b_rgf (a: array int) : bool
+    ensures { result <-> is_rgf a }
+  =
+    let n = a.length in
+    if n = 0 then
+      return true
+    else 
+      if a[0] <> 0 then
+        return false
+      else
+        for i = 1 to n-1 do
+          invariant { is_rgf_sub a 1 i }
+          if not (0 <= a[i] <= a[i-1]+1) then return false
+        done;
+        true
+
+end
+
+
+module Enum
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use array.ArrayEq
+  use arrayExtension.Inc
+  use arrayExtension.Cte
+  use Rgf
+  use lexgen.Cursor
+
+  clone lexgen.LexXX with
+    predicate is_XX = is_rgf
+
+  let create_cursor (n: int) : cursor
+    requires { n >= 0 }
+    ensures  { sound result }
+    ensures  { min_lex result.current }
+    ensures  { length result.current = n }
+  =
+    let a = make n 0 in
+    { current = a; new = true }
+
+  let next (c: cursor) : unit
+    requires { sound c }
+    ensures  { sound c }
+    ensures  { c.current.length = (old c).current.length }
+    ensures  { c.new -> lt_lex (old c.current) c.current }
+    ensures  { c.new -> inc (old c.current) c.current }
+    ensures  { not c.new -> array_eq (old c.current) c.current }
+    ensures  { not c.new -> max_lex c.current }
+  =
+    let a = c.current in
+    label L in
+    let n = a.length in
+    if n <= 1 then
+      c.new <- false
+    else
+      let ref r = (n-1) in
+      while r >= 1 && a[r] = a[r-1]+1 do
+        invariant { 0 <= r <= n-1 }
+        invariant { is_inc_sub a r n }
+        variant   { r + 1 }
+        r := r - 1
+      done;
+      if r = 0 then (* Last array reached. *)
+        c.new <- false
+      else begin
+        a[r] <- a[r] + 1;
+        for i = r+1 to n-1 do
+          invariant { r+1 <= i <= n }
+          invariant { lt_lex_sub_at (a at L) a 0 n r }
+          invariant { cte_sub a (r+1) i 0 }
+          invariant { (c.current at L)[r]+1 = c.current[r] }
+          a[i] <- 0
+        done;
+        c.new <- true
+      end
+
+end
+
+
+module RgfSound
+
+  use int.Int
+  use array.Array
+  use list.List
+  use array.ToList
+  use Rgf
+  use Enum 
+
+  clone lexgen.SmallCheck with
+    predicate is_XXX = is_rgf,
+    val create_cursor = create_cursor,
+    val next = next
+    
+  lemma b_is_fact_sound: forall a: array int. is_rgf a -> b_rgf a = true
+
+  (* Bounded-exhaustive test of the lemma before proving it: *)
+  let test_b_rgf () : verdict
+    diverges
+  =
+    let n = 5 in
+    small_check (fun l -> b_rgf (to_array l)) n
+
+end
+
+
+module RgfEndo
+
+  use Endo.Endo
+  use Endo.Enum as E
+  use Rgf
+
+  clone export lexgen.Filter with
+    predicate is_X = is_endo,
+    predicate is_Y = is_rgf,
+    val b_Y = b_rgf,
+    val create_cursor_X = E.create_cursor,
+    val next_X = E.next
+
+end
+
+
+module FilterDemo
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use RgfEndo
+  use lexgen.Cursor
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let c = create_cursor n in
+    let ref l = Nil in
+    if c.new then
+      while c.new do
+        invariant { c.new -> LZ.sound c }
+        let f = c.current in
+        let g = to_list f 0 f.length in
+        l := Cons g l;
+        next c
+      done;
+    l
+
+end
+
+
+module Test
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use Rgf
+  use Enum
+  use lexgen.Cursor
+
+  clone export lexgen.LexXX with
+    predicate is_XX = is_rgf
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let c = create_cursor n in
+    let ref l = Nil in
+    while c.new do
+      invariant { sound c }
+      let f = c.current in
+      let g = to_list f 0 f.length in
+      l := Cons g l;
+      next c
+    done;
+    l
+
+end

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="7">
+<prover id="1" name="Alt-Ergo" version="2.2.0" timelimit="5" steplimit="0" memlimit="1000"/>
+<file proved="true">
+<path name=".."/><path name="Fact.mlw"/>
+<theory name="Fact" proved="true">
+ <goal name="VC b_fact" expl="VC for b_fact" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="85"/></proof>
+ </goal>
+</theory>
+<theory name="Enum" proved="true">
+ <goal name="VC create_cursor" expl="VC for create_cursor" proved="true">
+ <proof prover="1"><result status="valid" time="0.02" steps="185"/></proof>
+ </goal>
+ <goal name="VC next" expl="VC for next" proved="true">
+ <proof prover="1"><result status="valid" time="0.64" steps="1772"/></proof>
+ </goal>
+</theory>
+<theory name="FactSound" proved="true">
+ <goal name="SmallCheck.VC create_cursor" expl="VC for create_cursor" proved="true">
+ <proof prover="1"><result status="valid" time="0.00" steps="14"/></proof>
+ </goal>
+ <goal name="SmallCheck.VC next" expl="VC for next" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="26"/></proof>
+ </goal>
+ <goal name="b_is_fact_sound" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="4"/></proof>
+ </goal>
+ <goal name="VC test_b_fact" expl="VC for test_b_fact" proved="true">
+ <proof prover="1"><result status="valid" time="0.00" steps="0"/></proof>
+ </goal>
+</theory>
+<theory name="FactEndo" proved="true">
+ <goal name="VC b_Y" expl="VC for b_Y" proved="true">
+ <proof prover="1"><result status="valid" time="0.00" steps="0"/></proof>
+ </goal>
+ <goal name="VC create_cursor_X" expl="VC for create_cursor_X" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="32"/></proof>
+ </goal>
+ <goal name="VC next_X" expl="VC for next_X" proved="true">
+ <proof prover="1"><result status="valid" time="0.03" steps="465"/></proof>
+ </goal>
+</theory>
+<theory name="FilterDemo" proved="true">
+ <goal name="VC run" expl="VC for run" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="18"/></proof>
+ </goal>
+</theory>
+<theory name="Test" proved="true">
+ <goal name="VC run" expl="VC for run" proved="true">
+ <proof prover="1"><result status="valid" time="0.00" steps="55"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>

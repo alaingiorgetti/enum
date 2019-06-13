@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="7">
+<prover id="0" name="Z3" version="4.7.1" timelimit="5" steplimit="0" memlimit="1000"/>
+<prover id="1" name="Alt-Ergo" version="2.2.0" timelimit="5" steplimit="0" memlimit="1000"/>
+<file proved="true">
+<path name=".."/><path name="Rgf.mlw"/>
+<theory name="Rgf" proved="true">
+ <goal name="VC b_rgf" expl="VC for b_rgf" proved="true">
+ <proof prover="1"><result status="valid" time="0.11" steps="228"/></proof>
+ </goal>
+</theory>
+<theory name="Enum" proved="true">
+ <goal name="VC create_cursor" expl="VC for create_cursor" proved="true">
+ <proof prover="1"><result status="valid" time="0.08" steps="404"/></proof>
+ </goal>
+ <goal name="VC next" expl="VC for next" proved="true">
+ <transf name="split_vc" proved="true" >
+  <goal name="VC next.0" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="10"/></proof>
+  </goal>
+  <goal name="VC next.1" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="10"/></proof>
+  </goal>
+  <goal name="VC next.2" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="11"/></proof>
+  </goal>
+  <goal name="VC next.3" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="11"/></proof>
+  </goal>
+  <goal name="VC next.4" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="27"/></proof>
+  </goal>
+  <goal name="VC next.5" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="99"/></proof>
+  </goal>
+  <goal name="VC next.6" expl="loop invariant init" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="4"/></proof>
+  </goal>
+  <goal name="VC next.7" expl="loop invariant init" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="13"/></proof>
+  </goal>
+  <goal name="VC next.8" expl="index in array bounds" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="12"/></proof>
+  </goal>
+  <goal name="VC next.9" expl="index in array bounds" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="12"/></proof>
+  </goal>
+  <goal name="VC next.10" expl="loop variant decrease" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="16"/></proof>
+  </goal>
+  <goal name="VC next.11" expl="loop invariant preservation" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="16"/></proof>
+  </goal>
+  <goal name="VC next.12" expl="loop invariant preservation" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="52"/></proof>
+  </goal>
+  <goal name="VC next.13" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="19"/></proof>
+  </goal>
+  <goal name="VC next.14" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="18"/></proof>
+  </goal>
+  <goal name="VC next.15" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="19"/></proof>
+  </goal>
+  <goal name="VC next.16" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="19"/></proof>
+  </goal>
+  <goal name="VC next.17" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="42"/></proof>
+  </goal>
+  <goal name="VC next.18" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="2.85" steps="2782"/></proof>
+  </goal>
+  <goal name="VC next.19" expl="index in array bounds" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="12"/></proof>
+  </goal>
+  <goal name="VC next.20" expl="index in array bounds" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="12"/></proof>
+  </goal>
+  <goal name="VC next.21" expl="loop invariant init" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="21"/></proof>
+  </goal>
+  <goal name="VC next.22" expl="loop invariant init" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="74"/></proof>
+  </goal>
+  <goal name="VC next.23" expl="loop invariant init" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="49"/></proof>
+  </goal>
+  <goal name="VC next.24" expl="loop invariant init" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="31"/></proof>
+  </goal>
+  <goal name="VC next.25" expl="index in array bounds" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="37"/></proof>
+  </goal>
+  <goal name="VC next.26" expl="loop invariant preservation" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="46"/></proof>
+  </goal>
+  <goal name="VC next.27" expl="loop invariant preservation" proved="true">
+  <proof prover="1"><result status="valid" time="0.11" steps="274"/></proof>
+  </goal>
+  <goal name="VC next.28" expl="loop invariant preservation" proved="true">
+  <proof prover="1"><result status="valid" time="0.04" steps="156"/></proof>
+  </goal>
+  <goal name="VC next.29" expl="loop invariant preservation" proved="true">
+  <proof prover="1"><result status="valid" time="0.02" steps="92"/></proof>
+  </goal>
+  <goal name="VC next.30" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="1.71" steps="831"/></proof>
+  </goal>
+  <goal name="VC next.31" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="39"/></proof>
+  </goal>
+  <goal name="VC next.32" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.02" steps="96"/></proof>
+  </goal>
+  <goal name="VC next.33" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.15" steps="203149"/></proof>
+  </goal>
+  <goal name="VC next.34" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="44"/></proof>
+  </goal>
+  <goal name="VC next.35" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.01" steps="44"/></proof>
+  </goal>
+  <goal name="VC next.36" expl="out of loop bounds" proved="true">
+  <proof prover="1"><result status="valid" time="0.00" steps="20"/></proof>
+  </goal>
+ </transf>
+ </goal>
+</theory>
+<theory name="RgfSound" proved="true">
+ <goal name="SmallCheck.VC create_cursor" expl="VC for create_cursor" proved="true">
+ <proof prover="1"><result status="valid" time="0.00" steps="14"/></proof>
+ </goal>
+ <goal name="SmallCheck.VC next" expl="VC for next" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="26"/></proof>
+ </goal>
+ <goal name="b_is_fact_sound" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="4"/></proof>
+ </goal>
+ <goal name="VC test_b_rgf" expl="VC for test_b_rgf" proved="true">
+ <proof prover="1"><result status="valid" time="0.00" steps="0"/></proof>
+ </goal>
+</theory>
+<theory name="RgfEndo" proved="true">
+ <goal name="VC b_Y" expl="VC for b_Y" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="0"/></proof>
+ </goal>
+ <goal name="VC create_cursor_X" expl="VC for create_cursor_X" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="32"/></proof>
+ </goal>
+ <goal name="VC next_X" expl="VC for next_X" proved="true">
+ <proof prover="1"><result status="valid" time="0.03" steps="500"/></proof>
+ </goal>
+</theory>
+<theory name="FilterDemo" proved="true">
+ <goal name="VC run" expl="VC for run" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="18"/></proof>
+ </goal>
+</theory>
+<theory name="Test" proved="true">
+ <goal name="VC run" expl="VC for run" proved="true">
+ <proof prover="1"><result status="valid" time="0.01" steps="55"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="7">
+<prover id="0" name="Alt-Ergo" version="2.2.0" timelimit="10" steplimit="0" memlimit="1000"/>
+<file proved="true">
+<path name=".."/><path name="Filtering.mlw"/>
+<theory name="Inj" proved="true">
+ <goal name="VC b_linear" expl="VC for b_linear" proved="true">
+ <proof prover="0"><result status="valid" time="0.06" steps="312"/></proof>
+ </goal>
+ <goal name="VC b_inj" expl="VC for b_inj" proved="true">
+ <proof prover="0"><result status="valid" time="0.01" steps="26"/></proof>
+ </goal>
+</theory>
+<theory name="InjBarray" proved="true">
+ <goal name="VC b_Y" expl="VC for b_Y" proved="true">
+ <proof prover="0"><result status="valid" time="0.00" steps="0"/></proof>
+ </goal>
+ <goal name="VC create_cursor_X" expl="VC for create_cursor_X" proved="true">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="34"/></proof>
+ </goal>
+ <goal name="VC next_X" expl="VC for next_X" proved="true">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.05" steps="245"/></proof>
+ </goal>
+</theory>
+<theory name="FilterDemoInj" proved="true">
+ <goal name="VC run" expl="VC for run" proved="true">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.01" steps="18"/></proof>
+ </goal>
+</theory>
+<theory name="Comb" proved="true">
+ <goal name="VC b_comb" expl="VC for b_comb" proved="true">
+ <proof prover="0"><result status="valid" time="0.02" steps="10"/></proof>
+ </goal>
+</theory>
+<theory name="CombBarray" proved="true">
+ <goal name="VC b_Y" expl="VC for b_Y" proved="true">
+ <proof prover="0"><result status="valid" time="0.02" steps="0"/></proof>
+ </goal>
+ <goal name="VC create_cursor_X" expl="VC for create_cursor_X" proved="true">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.02" steps="34"/></proof>
+ </goal>
+ <goal name="VC next_X" expl="VC for next_X" proved="true">
+ <proof prover="0" timelimit="5"><result status="valid" time="0.03" steps="245"/></proof>
+ </goal>
+</theory>
+<theory name="FilterDemoComb" proved="true">
+ <goal name="VC run" expl="VC for run" proved="true">
+ <proof prover="0"><result status="valid" time="0.02" steps="18"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>

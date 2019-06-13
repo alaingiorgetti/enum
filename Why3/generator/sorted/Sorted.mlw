@@ -1,0 +1,210 @@
+(***************************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti.                  *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+module Sorted
+
+  use int.Int
+  use array.Array
+  use Barray.Barray
+
+  predicate is_inc1_sub (a: array int) (l u:int) = 
+    forall i:int. l <= i < u -> a[i-1] <= a[i]
+
+  predicate is_inc1 (a: array int) = 
+    forall i:int. 1 <= i < a.length -> a[i-1] <= a[i]
+
+  predicate is_sorted (a: array int) (b: int) = is_barray a b /\ is_inc1 a
+
+  let function b_inc1 (a: array int) : bool
+    ensures { result <-> is_inc1 a }
+  =
+    let n = a.length in
+    for i = 1 to n-1 do
+      invariant { is_inc1_sub a 1 i }
+      if not (a[i-1] <= a[i]) then return false
+    done;
+    true
+
+  let function b_sorted (a: array int) (b: int) : bool
+    ensures { result <-> is_sorted a b }
+  =
+    b_barray a b && b_inc1 a
+
+end
+
+
+module Enum
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use array.ArrayEq
+  use arrayExtension.Cte
+  use Sorted
+  use lexgen.Cursor
+
+  clone lexgen.LexIntXX with
+    predicate is_XX = is_sorted
+
+  let create_cursor (n k: int) : cursor
+    requires { n >= 0 }
+    ensures  { result.new -> sound result k }
+    ensures  { result.new -> min_lex result.current k }
+    ensures  { length result.current = n }
+  = 
+    let a = make n 0 in
+    if k <= 0 then
+      { current = a; new = false }
+    else
+      { current = a; new = true }
+
+  let next (c: cursor) (k: int) : unit
+    requires { k > 0 }
+    requires { sound c k }
+    ensures  { sound c k }
+    ensures  { c.current.length = (old c).current.length }
+    ensures  { c.new -> lt_lex (old c.current) c.current }
+    ensures  { c.new -> inc (old c.current) c.current k }
+    ensures  { not c.new -> array_eq (old c.current) c.current }
+    ensures  { not c.new -> max_lex (old c.current) k }
+    ensures  { not c.new -> max_lex c.current k }
+  =
+    let a = c.current in
+    label L in
+    let n = a.length in
+    let ref r = (n-1) in
+    while r >= 0 && a[r] = k-1 do
+      invariant { -1 <= r <= n-1 }
+      invariant { cte_sub a (r+1) n (k-1) }
+      variant   { r + 1 }
+      r := r - 1
+    done;
+    if (r < 0) then (* Last array reached. *)
+      c.new <- false
+    else begin
+      a[r] <- a[r] + 1;
+      for i = r+1 to n-1 do
+        invariant { r+1 <= i <= n }
+        invariant { (a at L)[r]+1 = a[r] }
+        invariant { cte_sub a (r+1) i a[r] }
+        invariant { lt_lex_at (a at L) a r }
+        a[i] <- a[r]
+      done;
+      c.new <- true
+    end
+
+end
+
+
+module SortedSound
+
+  use int.Int
+  use array.Array
+  use list.List
+  use array.ToList
+  use Sorted
+  use Enum 
+
+  clone lexgen.SmallCheckInt with
+    predicate is_XXX = is_sorted,
+    val create_cursor = create_cursor,
+    val next = next
+    
+  lemma b_is_sorted_sound: forall a: array int. forall k: int. 
+    is_sorted a k -> b_sorted a k = true
+
+  (* Bounded-exhaustive test of the lemma before proving it: *)
+  let test_b_sorted () : verdict
+    diverges
+  =
+    let n = 5 in
+    let k = 3 in
+    small_check_int (fun l k -> b_sorted (to_array l) k) n k
+
+end
+
+
+module SortedBarray
+
+  use Barray.Barray
+  use Barray.Enum as E
+  use Sorted
+
+  clone export lexgen.FilterInt with
+    predicate is_X = is_barray,
+    predicate is_Y = is_sorted,
+    val b_Y = b_sorted,
+    val create_cursor_X = E.create_cursor,
+    val next_X = E.next
+
+end
+
+
+module FilterDemo
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use SortedBarray
+  use lexgen.Cursor
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let k = 3 in
+    let c = create_cursor n k in
+    let ref l = Nil in
+    if c.new then
+      while c.new do
+        invariant { c.new -> LZ.sound c k }
+        let f = c.current in
+        let g = to_list f 0 f.length in
+        l := Cons g l;
+        next c k
+      done;
+    l
+
+end
+
+
+module Test
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use Sorted
+  use Enum
+  use lexgen.Cursor
+
+  clone export lexgen.LexIntXX with
+    predicate is_XX = is_sorted
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let k = 3 in
+    let c = create_cursor n k in
+    let ref l = Nil in
+    while c.new do
+      invariant { c.new -> sound c k }
+      let f = c.current in
+      let g = to_list f 0 f.length in
+      l := Cons g l;
+      next c k
+    done;
+    l
+
+end

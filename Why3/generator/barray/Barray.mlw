@@ -1,0 +1,162 @@
+(********************************************************************)
+(* Copyright (C) 2018-19 Alain Giorgetti, C. Erard and R. Lazarini  *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+(* A barray is an array of integers with values in [0..b-1] for some bound b. *)
+
+module Barray
+
+  use int.Int
+  use array.Array
+  use arrayExtension.ArrayInjection
+  use lex.Lex
+
+  predicate is_barray_sub (a: array int) (l u b: int) = 0 < b /\ range_sub a l u b
+
+  predicate is_barray (a: array int) (b: int) = 0 < b /\ is_barray_sub a 0 a.length b
+
+  let function b_barray (a: array int) (b: int) : bool
+    ensures { result <-> is_barray a b }
+  =
+    if b <= 0 then
+      false
+    else begin
+      for i = 0 to a.length-1 do
+        invariant { is_barray_sub a 0 i b }
+        if not (0 <= a[i] < b) then return false
+      done;
+      true
+    end
+
+end
+
+(** {Enumeration of barrays} *)
+
+module Enum
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use array.ArrayEq
+  use arrayExtension.Cte
+  use Barray
+  use lexgen.Cursor
+
+  clone export lexgen.LexIntXX with
+    predicate is_XX = is_barray
+
+  let create_cursor (n b: int) : cursor
+    requires { n >= 0 }
+    ensures  { result.new -> sound result b }
+    ensures  { result.new -> min_lex result.current b }
+    ensures  { length result.current = n }
+  = 
+    let a = make n 0 in
+    if b <= 0 then
+      { current = a; new = false }
+    else
+      { current = a; new = true }
+
+  let next (c: cursor) (b: int) : unit
+    requires { b > 0 }
+    requires { sound c b }
+    ensures  { sound c b }
+    ensures  { c.current.length = (old c).current.length }
+    ensures  { c.new -> lt_lex (old c.current) c.current }
+    ensures  { c.new -> inc (old c.current) c.current b }
+    ensures  { not c.new -> array_eq (old c.current) c.current }
+    ensures  { not c.new -> max_lex (old c.current) b }
+    ensures  { not c.new -> max_lex c.current b }
+  =
+    let a = c.current in
+    let n = a.length in
+    label L in 
+    let ref r = (n-1) in
+    while r >= 0 && a[r] = b-1 do
+      invariant { -1 <= r <= n-1 }
+      invariant { cte_sub a (r+1) n (b-1) }
+      variant   { r + 1 }
+      r := r - 1
+    done;
+    if (r < 0) then (* Last array reached. *)
+      c.new <- false
+    else begin
+     a[r] <- a[r] + 1;
+     for i = r+1 to n-1 do
+       invariant { r+1 <= i <= n }
+       invariant { (a at L)[r]+1 = a[r] }
+       invariant { cte_sub a (r+1) i 0 }
+       invariant { lt_lex_at (a at L) a r }
+       a[i] <- 0
+     done;
+     c.new <- true
+     end
+
+end
+
+
+module BarraySound
+
+  use int.Int
+  use array.Array
+  use list.List
+  use array.ToList
+  use Barray
+  use Enum
+
+  clone lexgen.SmallCheckInt with
+    predicate is_XXX = is_barray,
+    val create_cursor = create_cursor,
+    val next = next
+
+  lemma b_is_barray_sound: forall a: array int. forall k: int. 
+    is_barray a k -> b_barray a k = true
+
+  (* Bounded-exhaustive test of the lemma before proving it: *)
+  let test_b_barray () : verdict
+    diverges
+  =
+    let n = 5 in
+    let k = 3 in
+    small_check_int (fun l k -> b_barray (to_array l) k) n k
+
+end
+
+
+module Test
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use Barray
+  use Enum
+  use lexgen.Cursor
+
+  clone export lexgen.LexIntXX with
+    predicate is_XX = is_barray
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let k = 4 in
+    let c = create_cursor n k in
+    let ref l = Nil in
+    while c.new do
+      invariant { c.new -> sound c k }
+      let f = c.current in
+      let g = to_list f 0 f.length in
+      l := Cons g l;
+      next c k
+    done;
+    l
+
+end

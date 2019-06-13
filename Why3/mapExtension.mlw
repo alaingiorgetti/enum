@@ -1,0 +1,37 @@
+(********************************************************************)
+(* Copyright (C) 2019 Alain Giorgetti                               *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+(* Extensions of stdlib/map.mlw *)
+
+module MapExtension
+
+  use int.Int
+  use map.Map
+  use map.Occ
+  use map.MapPermut
+
+(* Pb: Automated provers do not instantiate correctly this lemma from map.mlw:
+  lemma occ_append:
+    forall v: 'a, m: map int 'a, l mid u: int.
+    l <= mid <= u -> occ v m l u = occ v m l mid + occ v m mid u
+    (* by induction on u *)
+*)
+
+  (* Instance of Lemma occ_append to help the automated provers.
+     Easily proved by Alt-Ergo, Z3 and CVC4. *)
+  lemma occ_append_instance:
+    forall v: 'a, m: map int 'a, mid u: int.
+    0 <= mid <= u -> occ v m 0 u = occ v m 0 mid + occ v m mid u
+
+  lemma permut_split: forall a b: map int 'a, l i u: int.
+    l <= i < u -> permut a b l u -> permut a b l i
+    -> permut a b i u
+
+end

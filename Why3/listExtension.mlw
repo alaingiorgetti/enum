@@ -1,0 +1,113 @@
+(********************************************************************)
+(* Copyright 2018-19 Alain Giorgetti and Rémi Lazarini              *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+(* Extensions of stdlib/list.mlw *)
+
+module ToArray
+  use int.Int
+  use array.Array
+  use list.List
+  use list.Length as L
+
+   let rec to_array_rec (l: list int) (a: array int) : unit
+    requires { L.length l <= a.length }
+    variant { L.length l }
+  =
+    match l with
+    | Nil -> ()
+    | Cons y m -> a[a.length - L.length l] <- y; to_array_rec m a
+    end
+
+  let to_array (l: list int) : array int
+  =
+    let a = make (L.length l) 0 in
+    to_array_rec l a;
+    a
+
+end
+
+
+module ListLengthExtension
+
+  use int.Int
+  use list.List
+  use list.Length
+
+   (* Two lemmas for Coq proofs of lemmas in subsequent modules. *)
+
+  lemma Length_cons : forall x:'a, l:list 'a. length (Cons x l) = 1 + length l
+  lemma Length_cons_pos:  forall x:'a, l:list 'a. length (Cons x l) > 0
+  
+end
+
+
+module ListExtension
+
+  use int.Int
+  use ref.Ref
+  use list.List
+  use list.Length
+  use list.Append
+  use list.NthNoOpt
+  use ListLengthExtension
+
+  (* For shorter Coq proofs. Proved with Alt-Ergo. *)
+  lemma Length_not_nil: forall l: list 'a. length l > 0 <-> l <> Nil
+
+  predicate is_blist (l:list int) (b:int) = forall i:int.
+    0 <= i < length l -> 0 <= nth i l < b
+
+  (* (is_ipj l i) holds iff l is [i; i+1; ...] *)
+  predicate is_ipj (l:list int) (i: int) = forall j:int.
+    0 <= j < length l -> nth j l = i + j
+
+  (* (is_id l) holds iff l is [0; 1; ...; n-1] with n = length l. *)
+  predicate is_id (l:list int) = forall i:int.
+    0 <= i < length l -> nth i l = i
+
+  (* (id_aux n i) is the list [i; i+1; ...; n-1] *)
+  let rec id_aux (n i: int) : list int
+    requires { 0 <= n }
+    ensures  { length result = n }
+    ensures  { is_ipj result i }
+    variant  { n }
+  =
+    if n <= 0 then Nil else Cons i (id_aux (n-1) (i+1))
+
+  (* (id n) is the list [0; 1; ...; n-1] *)
+  let id (n: int) : list int
+    requires { 0 <= n }
+    ensures  { length result = n }
+    ensures  { is_id result }
+  =
+    id_aux n 0
+
+  let rec rm_nth (x:int) (l:ref (list int)) : int
+    requires { 0 <= x < length !l }
+    ensures  { result = nth x (old !l) }
+    ensures  { forall i. 0 <= i < x -> nth i !l = nth i (old !l) }
+    ensures  { forall i. x <= i < length !l -> nth i !l = nth (i+1) (old !l) }
+    ensures  { length !l = length (old !l) - 1 }
+    variant  { length !l }
+  =
+    match (!l) with
+    | Nil -> l := Nil; 0
+    | Cons y m ->
+        if x = 0 then begin
+          l := m; y
+        end else begin
+          let r = ref m in
+          let z = rm_nth (x-1) r in
+          l := Cons y !r;
+          z
+        end
+    end
+
+end

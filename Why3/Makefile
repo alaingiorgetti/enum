@@ -1,5 +1,5 @@
 ######################################################################
-# Copyright 2018 Alain Giorgetti and Rémi Lazarini                   #
+# Copyright (C) 2018-19 Alain Giorgetti and Rémi Lazarini            #
 # FEMTO-ST institute                                                 #
 ######################################################################
 
@@ -8,22 +8,46 @@
 #  General Public License version 2.1                                #
 ######################################################################
 
-.PHONY: idebarray idepermut idepermut1 build start
+# Why3/Makefile
 
-# start why3 ide with Barray.mlw
-idebarray:
-	why3 ide -L ./ Barray.mlw
+.PHONY: ide prove test filter run extract latex clean
 
-# start why3 ide with Permutation.mlw
-idepermut:
-	why3 ide -L ./ Permutation.mlw
+# Set timeout to 10 seconds (File/Preferences/General/Time limit)
+ide:
+	why3 ide arrayExtension.mlw
+	why3 ide listExtension.mlw
+	why3 ide mapExtension.mlw
+	why3 ide lex.mlw
 
-# start why3 ide with Permutation.mlw
-idepermut1:
-	why3 ide -L ./ Permutation1.mlw
+prove:
+	why3 prove -P alt-ergo -P z3 -a split_all_full arrayExtension.mlw
+	why3 prove -P alt-ergo listExtension.mlw
+	why3 prove -P alt-ergo -P z3 mapExtension.mlw
+	why3 replay lex
+	cd generator; make prove
 
-build:
-	docker build --tag proofimg .
+test:
+	cd generator; make test
 
-start:
-	docker start --attach --interactive proofctr
+filter:
+	cd generator; make filter
+
+run:
+	cd generator; make run
+
+extract:
+	cd generator; make extract
+
+latex:
+	why3 session latex arrayExtension listExtension lex generator/barray/Barray \
+	generator/endo/Endo generator/fact/Fact generator/filtering/Filtering \
+	generator/lexgen generator/permutation/Permutation \
+	generator/rgf/Rgf generator/sorted/Sorted generator/surj/Surj
+	
+clean:
+	rm -f *.bak;
+	cd arrayExtension; rm -f *.bak
+	cd listExtension; rm -f *.bak
+	cd mapExtension; rm -f *.bak
+	cd lex; rm -f *.bak
+	cd generator; make clean

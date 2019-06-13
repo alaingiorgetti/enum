@@ -1,0 +1,109 @@
+(***************************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti                   *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+module Surj
+
+  use int.Int
+  use array.Array
+  use Barray.Barray
+
+  predicate is_eq_im_sub (a: array int) (j u: int) =
+    exists i:int. 0 <= i < u /\ a[j] = a[i]
+
+  predicate is_eq_im (a: array int) (j: int) = (* is_eq_im_sub a j a.length *)
+    exists i:int. 0 <= i < a.length /\ a[j] = a[i]
+
+  let function b_eq_im (a: array int) (j: int): bool
+    requires { 0 <= j < a.length }
+    ensures { result <-> is_eq_im a j }
+  =
+    let n = a.length in
+    for i = 0 to n-1 do
+      invariant { not (is_eq_im_sub a j i) }
+      if a[j] = a[i] then return true
+    done;
+    false
+
+  predicate is_im_sub (a: array int) (k u: int) = 
+    k <= a.length /\
+    forall i:int. 0 <= i <= u < k -> is_eq_im a i
+
+  predicate is_im (a: array int) (k: int) =  (* is_im_sub a k (k-1) *)
+    k <= a.length /\
+    forall i:int. 0 <= i < k -> is_eq_im a i
+
+  let function b_im (a: array int) (k: int): bool
+    ensures { result <-> is_im a k }
+  =
+    if k > a.length then
+      false
+    else begin
+      for i = 0 to k-1 do
+        invariant { is_im_sub a k i }
+        if not (b_eq_im a i) then return false
+      done;
+      true
+    end
+
+  predicate is_surj (a: array int) (k: int) = 
+    is_barray a k /\ is_im a k
+
+  let function b_surj (a: array int) (k: int): bool
+    ensures { result <-> is_surj a k }
+  = 
+    b_barray a k && b_im a k
+
+end
+
+
+module SurjBarray
+
+  use Barray.Barray
+  use Barray.Enum as E
+  use Surj
+
+  clone export lexgen.FilterInt with
+    predicate is_X = is_barray,
+    predicate is_Y = is_surj,
+    val b_Y = b_surj,
+    val create_cursor_X = E.create_cursor,
+    val next_X = E.next
+
+end
+
+
+module FilterDemo
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use SurjBarray
+  use lexgen.Cursor
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let k = 2 in
+    let c = create_cursor n k in
+    let ref l = Nil in
+    if c.new then
+      while c.new do
+        invariant { c.new -> LZ.sound c k }
+        let f = c.current in
+        let g = to_list f 0 f.length in
+        l := Cons g l;
+        next c k
+      done;
+      l
+
+end

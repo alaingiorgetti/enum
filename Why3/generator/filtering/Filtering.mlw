@@ -1,0 +1,160 @@
+(***************************************************************************)
+(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti                   *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+(* Examples of generators defined by filtering *)
+
+module Inj
+
+  use int.Int
+  use array.Array
+  use Barray.Barray
+  use arrayExtension.ArrayInjection
+
+  predicate is_linear_sub (a: array int) (l: int) =
+    forall i:int. 0 <= i < l -> diff a i
+
+  predicate is_linear (a: array int) =
+   forall i:int. 0 <= i < a.length -> diff a i
+
+  let function b_linear (a: array int): bool
+    ensures { result <-> is_linear a }
+  =
+    let n = a.length in
+    for i = 0 to n-1 do
+      invariant { is_linear_sub a i }
+      if not (b_diff a i) then return false
+    done;
+    true
+
+  predicate is_inj (a: array int) (k: int) =
+   a.length <= k /\ is_barray a k /\ is_linear a
+
+  let function b_inj (a: array int) (k: int): bool
+    ensures { result <-> is_inj a k }
+  =
+    if k < a.length then
+      false
+    else
+      b_barray a k && b_linear a
+
+end
+
+
+module InjBarray
+
+  use Barray.Barray
+  use Barray.Enum as E
+  use Inj
+
+  clone export lexgen.FilterInt with
+    predicate is_X = is_barray,
+    predicate is_Y = is_inj,
+    val b_Y = b_inj,
+    val create_cursor_X = E.create_cursor,
+    val next_X = E.next
+
+end
+
+
+module FilterDemoInj
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use InjBarray
+  use lexgen.Cursor
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let k = 3 in
+    let c = create_cursor n k in
+    let ref l = Nil in
+    if c.new then
+      while c.new do
+        invariant { c.new -> LZ.sound c k }
+        let f = c.current in
+        let g = to_list f 0 f.length in
+        l := Cons g l;
+        next c k
+      done;
+      l
+
+end
+
+
+module Comb
+
+  use int.Int
+  use array.Array
+  use Barray.Barray
+  use arrayExtension.Inc
+
+  predicate is_comb (a: array int) (k: int) =
+     0 < k /\ is_barray a k /\ is_inc a
+
+  let function b_comb (a: array int) (k: int): bool
+    ensures { result <-> is_comb a k }
+  =
+    if k <= 0 then
+      false
+    else
+      b_barray a k && b_inc a
+
+end
+
+
+module CombBarray
+
+  use Barray.Barray
+  use Barray.Enum as E
+  use Comb
+
+  clone export lexgen.FilterInt with
+    predicate is_X = is_barray,
+    predicate is_Y = is_comb,
+    val b_Y = b_comb,
+    val create_cursor_X = E.create_cursor,
+    val next_X = E.next
+
+end
+
+
+module FilterDemoComb
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use CombBarray
+  use lexgen.Cursor
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let k = 4 in
+    let c = create_cursor n k in
+    let ref l = Nil in
+    if c.new then
+      while c.new do
+        invariant { c.new -> LZ.sound c k }
+        let f = c.current in
+        let g = to_list f 0 f.length in
+        l := Cons g l;
+        next c k
+      done;
+      l
+
+end

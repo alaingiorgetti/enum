@@ -1,0 +1,193 @@
+(***************************************************************************)
+(* Copyright (C) 2018-19 Alain Giorgetti, Rémi Lazarini and Clotilde Erard *)
+(* FEMTO-ST institute                                                      *)
+(***************************************************************************)
+
+(***************************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser         *)
+(*  General Public License version 2.1                                     *)
+(***************************************************************************)
+
+module Fact
+
+  use int.Int
+  use array.Array
+
+  predicate is_fact_sub (a:array int) (l u:int) = 
+    forall i:int. l <= i < u -> 0 <= a[i] <= i
+    
+  predicate is_fact (a:array int) = is_fact_sub a 0 a.length
+
+  let function b_fact (a: array int) : bool
+    ensures { result <-> is_fact a }
+  =
+    let n = a.length in
+    for i = 0 to n - 1 do
+      invariant { is_fact_sub a 0 i }
+      if not (0 <= a[i] <= i) then return false
+    done;
+    true
+
+end
+
+
+module Enum
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+   use array.ArrayEq
+  use arrayExtension.Cte
+  use arrayExtension.Id
+  use Fact
+  use lexgen.Cursor
+  
+  clone export lexgen.LexXX with
+    predicate is_XX = is_fact
+
+  let create_cursor (n: int) : cursor
+    requires { n >= 0 }
+    ensures  { length result.current = n }
+    ensures  { sound result }
+    ensures  { min_lex result.current }
+  = 
+    let a = make n 0 in
+    { current = a; new = true }
+
+  let next (c: cursor) : unit
+    requires { sound c }
+    ensures  { sound c }
+    ensures  { c.current.length = (old c).current.length }
+    ensures  { c.new -> lt_lex (old c.current) c.current }
+    ensures  { c.new -> inc (old c.current) c.current }
+    ensures  { not c.new -> array_eq (old c.current) c.current }
+    ensures  { not c.new -> max_lex c.current }
+  =
+    let a = c.current in
+    let n = a.length in
+    label L in
+    let ref r = n-1 in
+    while r >= 0 && a[r] = r do
+      invariant { -1 <= r <= n-1 }
+      invariant { is_id_sub a (r+1) n }
+      variant   { r + 1 }
+      r := r - 1
+    done; 
+    if (r < 0) then (* Last array reached. *)
+      c.new <- false
+    else begin
+      a[r] <- a[r] + 1;
+      for i = r+1 to n-1 do
+        invariant { r+1 <= i <= n }
+        invariant { (a at L)[r]+1 = a[r] }
+        invariant { cte_sub a (r+1) i 0 }
+        invariant { lt_lex_at (a at L) a r }
+        a[i] <- 0
+      done;
+      c.new <- true
+    end
+    
+end
+
+
+module FactSound
+
+  use int.Int
+  use array.Array
+  use list.List
+  use array.ToList
+  use Fact
+  use Enum 
+
+  clone lexgen.SmallCheck with
+    predicate is_XXX = is_fact,
+    val create_cursor = create_cursor,
+    val next = next
+    
+  lemma b_is_fact_sound: forall a: array int. is_fact a -> b_fact a = true
+
+  (* Bounded-exhaustive test of the lemma before proving it: *)
+  let test_b_fact () : verdict
+    diverges
+  =
+    let n = 5 in
+    small_check (fun l -> b_fact (to_array l)) n
+
+end
+
+
+module FactEndo
+
+  use Endo.Endo
+  use Endo.Enum as E
+  use Fact
+
+  clone export lexgen.Filter with
+    predicate is_X = is_endo,
+    predicate is_Y = is_fact,
+    val b_Y = b_fact,
+    val create_cursor_X = E.create_cursor,
+    val next_X = E.next
+
+end
+
+
+module FilterDemo
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use FactEndo
+  use lexgen.Cursor
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let c = create_cursor n in
+    let ref l = Nil in
+    if c.new then
+      while c.new do
+        invariant { c.new -> LZ.sound c }
+        let f = c.current in
+        let g = to_list f 0 f.length in
+        l := Cons g l;
+        next c
+      done;
+    l
+
+end
+
+
+module Test
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use Fact
+  use Enum
+  use lexgen.Cursor
+
+  clone export lexgen.LexXX with
+    predicate is_XX = is_fact
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let c = create_cursor n in
+    let ref l = Nil in
+    while c.new do
+      invariant { sound c }
+      let f = c.current in
+      let g = to_list f 0 f.length in
+      l := Cons g l;
+      next c
+    done;
+    l
+
+end

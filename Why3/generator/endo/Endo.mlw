@@ -1,0 +1,147 @@
+(********************************************************************)
+(* Copyright (C) 2019 Alain Giorgetti and Clotilde Erard            *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+module Endo
+
+  use int.Int
+  use array.Array
+
+  predicate is_endo_sub (a:array int) (l u:int) = forall i:int.
+    l <= i < u -> 0 <= a[i] < a.length
+
+  predicate is_endo (a:array int) = is_endo_sub a 0 a.length
+  
+  let function b_endo (a: array int) : bool
+   ensures { result <-> is_endo a }
+  =
+    let n = a.length in
+    for i = 0 to n - 1 do
+      invariant { is_endo_sub a 0 i }
+      if not (0 <= a[i] < a.length) then return false
+    done;
+    true
+
+end
+
+
+module Enum
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use array.ArrayEq
+  use arrayExtension.Cte
+  use Endo
+  use lexgen.Cursor
+
+  clone lexgen.LexXX with
+    predicate is_XX = is_endo
+
+  let create_cursor (n: int) : cursor
+    requires { n >= 0 }
+    ensures  { sound result }
+    ensures  { min_lex result.current }
+    ensures  { length result.current = n }
+  = 
+    let a = make n 0 in
+    { current = a; new = true }
+
+  let next (c: cursor) : unit
+    requires { sound c }
+    ensures  { sound c }
+    ensures  { c.current.length = (old c).current.length }
+    ensures  { c.new -> lt_lex (old c.current) c.current }
+    ensures  { c.new -> inc (old c.current) c.current }
+    ensures  { not c.new -> array_eq (old c.current) c.current }
+    ensures  { not c.new -> max_lex c.current }
+  =
+    let a = c.current in
+    let n = a.length in
+    label L in
+    let ref r = (n-1) in
+    while r >= 0 && a[r] = n-1 do
+      invariant { -1 <= r <= n-1 }
+      invariant { cte_sub a (r+1) n (n-1) }
+      variant   { r + 1 }
+      r := r - 1
+    done;
+    if (r < 0) then (* Last array reached. *)
+      c.new <- false
+    else begin
+      a[r] <- a[r] + 1;
+      for i = r+1 to n-1 do
+        invariant { r+1 <= i <= n }
+        invariant { (a at L)[r]+1 = a[r] }
+        invariant { cte_sub a (r+1) i 0 }
+        invariant { lt_lex_at (a at L) a r }
+        a[i] <- 0
+      done;
+      c.new <- true
+    end
+
+end
+
+
+module EndoSound
+
+  use int.Int
+  use array.Array
+  use list.List
+  use array.ToList
+  use Endo
+  use Enum
+
+  clone lexgen.SmallCheck with
+    predicate is_XXX = is_endo,
+    val create_cursor = create_cursor,
+    val next = next
+
+  lemma b_is_endo_sound: forall a: array int. is_endo a -> b_endo a = true
+
+  (* Bounded-exhaustive test of the lemma before proving it: *)
+  let test_b_endo () : verdict
+    diverges
+  =
+    let n = 5 in
+    small_check (fun l -> b_endo (to_array l)) n
+
+end
+
+
+module Test
+
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use array.ToList
+  use Endo
+  use Enum
+  use lexgen.Cursor
+
+  clone export lexgen.LexXX with
+    predicate is_XX = is_endo
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let c = create_cursor n in
+    let ref l = Nil in
+    while c.new do
+      invariant { sound c }
+      let f = c.current in
+      let g = to_list f 0 f.length in
+      l := Cons g l;
+      next c
+    done;
+    l
+
+end

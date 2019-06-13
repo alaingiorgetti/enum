@@ -1,31 +1,26 @@
-Library enum
+Library ENUM
 
-Version 1.0, TODO
-===========================
+Version 1.0
+===========
 
-URL
+- C generators, specified in ACSL for verification with the WP plugin of the 
+  Frama-C platform
 
-For Coq 6.?
+- Downloadable at http://members.femto-st.fr/alain-giorgetti/en
 
-Version 1.1, TODO
-===========================
+Version 1.1
+===========
 
-URL
++ Folder Why3 with some WhyML generators, for verification with Why3
 
-For Coq 6.?
+Version 1.2
+===========
 
-Version 1.2, TODO
-===========================
++ Folder cACSL with a significant part of ENUM 1.0
 
-+ New file INSTALL for installation.
+o Folder Why3 with more WhyML generators than in ENUM 1.1
 
-- Adaptation to Coq 8.?
++ Installation with Docker
 
-o Folder Why3 as in enum 1.1
-
-o Folder cACSL from enum 1.0, completed by ..
-
-+ Installation with Docker documented in INSTALL.md.
-
-+ Dockerfile.
++ Dockerfile
 

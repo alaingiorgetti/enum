@@ -11,7 +11,7 @@ let print_z_int_list (l: Z.t list) =
 (* Main function, running a test function returning a verdict. *)
 
 let () =
-  let v = Endo__Main.main () in
+  let v = Endo__EndoSound.test_b_endo () in
   let r = Z.to_string v.rank in
   if v.witness = [] then
     Format.printf "Test passed. %s data tested.\n\n" r

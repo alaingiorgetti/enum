@@ -35,7 +35,7 @@ why3 extract --modular --recursive -D ocaml64 $1 -o ./OCaml $2
 echo "WARNING: Works only with the Docker container generated with the provided Dockerfile"
 cp /home/opam/enum/OCaml/generator/endo/Main.ml ./OCaml/
 cd OCaml
-cat Main.ml | sed -e "s/Endo__Main.main/$3/g" > Main.ml.tmp
+cat Main.ml | sed -e "s/Endo__EndoSound.test_b_endo/$3/g" > Main.ml.tmp
 mv Main.ml.tmp Main.ml
 # more Main.ml
 ocamlbuild -pkg zarith Main.native

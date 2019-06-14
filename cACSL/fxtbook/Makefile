@@ -6,6 +6,7 @@
 #  make test
 # for testing.
 
+# This command works only in a docker container with Frama-C
 wp:
 	cd combination; make wp
 	cd involution; make wp
@@ -14,6 +15,7 @@ wp:
 	cd subset; make wp
 
 compile:
+	cd ../fcts; make
 	cd combination; make compile
 	cd involution; make compile
 	cd permutation; make compile
@@ -28,6 +30,7 @@ test: compile
 	cd subset; make test
 	
 clean:
+	cd ../fcts; make clean
 	cd combination; make clean
 	cd involution; make clean
 	cd permutation; make clean

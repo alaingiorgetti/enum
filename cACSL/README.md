@@ -15,5 +15,8 @@ next_..().
 How to use this code?
 =====================
 
-See the file Makefile for the different possible actions (compilation, 
-proof, etc). See also the file Makefile in each subfolder.
+See the files Makefile in the folders 'fxtbook' and 'generation' for the different 
+possible actions (compilation, test, etc). 
+The 'wp' command allows you to replay the proofs with the WP plugin. 
+Note that this command only works in a specific Docker container with Frama-C 
+and the supported Why3 version. See the Makefile to build this container.

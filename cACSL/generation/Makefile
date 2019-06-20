@@ -1,5 +1,15 @@
+###################################################################
+# Copyright (C) 2014-2019 R. Genestier, A. Giorgetti and C. Erard #
+# FEMTO-ST institute                                              #
+###################################################################
+
+###################################################################
+#  This software is distributed under the terms of the GNU Lesser #
+#  General Public License version 2.1                             #
+###################################################################
+
 # File cACSL/generation/Makefile
-#
+
 # Run
 #  make wp
 # to prove (may be very long),

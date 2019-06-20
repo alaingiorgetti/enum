@@ -45,8 +45,8 @@ OCaml
 ptrWhy3
 -------
 
-  WhyML generators extractable in C. 
-  The driver for extracting C arrays is kindly provided by R. Rieu-Helft.
+  WhyML generators extractable in C.
+  The extraction driver for C arrays is kindly provided by R. Rieu-Helft.
 
 Why3
 ----

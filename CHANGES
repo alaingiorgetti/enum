@@ -24,3 +24,7 @@ o Folder Why3 with more WhyML generators than in ENUM 1.1
 
 + Dockerfile
 
+For version 1.2.1
+=================
+
+o Simpler code for small_check in Why3/generator/lexgen.mlw

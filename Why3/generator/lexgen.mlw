@@ -1,5 +1,5 @@
 (********************************************************************)
-(* Copyright (C) 2019 Alain Giorgetti and Clotidle Erard            *)
+(* Copyright (C) 2019-2020 Alain Giorgetti and Clotilde Erard       *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -20,7 +20,7 @@ module Cursor
 
 end
 
-(** {1 Refinement of lexicographic order} *)
+(** {Refinement of lexicographic order} *)
 
 module LexXX
 
@@ -50,7 +50,7 @@ module LexXX
 end
 
 
-(** Refinement of lexicographic order with an integer parameter *)
+(** {Refinement of lexicographic order with an integer parameter} *)
 
 module LexIntXX
 
@@ -80,14 +80,13 @@ module LexIntXX
 
 end
 
-(** {2 Generic definition of a lexicographic small step generator}
 
-   With a generic function small_check for BET.
-
-*)
+(* {Enumerative testing for data with type (array int) and an oracle with 
+  type list int -> bool} *)
 
 module SmallCheck
 
+  use option.Option
   use int.Int
   use ref.Ref
   use array.Array
@@ -112,9 +111,9 @@ module SmallCheck
 
   (* Type for BET output *)
   type verdict = {
-    witness: list int; (* counterexample or Nil if none *)
+    witness: option (list int); (* Some counterexample, or None if test passes *)
     rank: int;         (* number of tested data when witness is found,
-                          of total number of tested data is no counterexample *)
+                          or total number of tested data if no counterexample *)
   }
 
   let small_check (oracle: list int -> bool) (n: int) : verdict
@@ -123,7 +122,6 @@ module SmallCheck
   =
     let c = create_cursor n in
     let ref r = 0 in
-    let ref ce = Nil in
     while c.new do
       invariant { c.new -> sound c }
       r := r+1;
@@ -131,20 +129,20 @@ module SmallCheck
       let l = to_list a 0 a.length in
       if oracle l then
         next c
-      else begin
-        ce := l;
-        c.new <- false
-      end
+      else
+        return { witness = Some l; rank = r }
     done;
-    { witness = ce; rank = r }
+    { witness = None; rank = r }
 
 end
 
 
-(** {BET with an additional integer parameter} *)
+(** {BET for data with type (array int) and an oracle with 
+     type (list int -> int -> bool), additional integer parameter} *)
 
 module SmallCheckInt
 
+  use option.Option
   use int.Int
   use ref.Ref
   use array.Array
@@ -169,9 +167,9 @@ module SmallCheckInt
 
   (* Type for BET output *)
   type verdict = {
-    witness: list int; (* counterexample or Nil if none *)
+    witness: option (list int); (* Some counterexample, or None if test passes *)
     rank: int;         (* number of tested data when witness is found,
-                          of total number of tested data is no counterexample *)
+                          or total number of tested data if no counterexample *)
   }
 
   let small_check_int (oracle: list int -> int -> bool) (n k: int) : verdict
@@ -180,7 +178,6 @@ module SmallCheckInt
   =
     let c = create_cursor n k in
     let ref r = 0 in
-    let ref ce = Nil in
     while c.new do
       invariant { c.new -> sound c k }
       r := r+1;
@@ -188,16 +185,15 @@ module SmallCheckInt
       let l = to_list a 0 a.length in
       if oracle l k then
         next c k
-      else begin
-        ce := l;
-        c.new <- false
-      end
+      else
+        return { witness = Some l; rank = r }
     done;
-    { witness = ce; rank = r }
+    { witness = None; rank = r }
 
 end
 
-(** {2 Generic definition of a lexicographic small step generator by filtering}
+
+(** {Generic definition of a lexicographic small step generator by filtering}
 *)
 
 module Filter

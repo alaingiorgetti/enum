@@ -14,7 +14,7 @@ Contact: alain.giorgetti AT femto-st.fr
 Documentation
 =============
 
-The project is documented by README files and the references below.
+The project is documented by the present file and in [EG19].
 
 
 Folders
@@ -71,6 +71,11 @@ proof, etc). See also the files Makefile in subfolders.
 
 References
 ==========
+
+[EG19] C. Erard and A. Giorgetti. Bounded Exhaustive Testing with Certified
+and Optimized Data Enumeration Programs. In ICTSS’19, 31st IFIP Int. Conf.
+on Testing Software and Systems, volume 11812 of Lecture Notes in Computer
+Science, pages 159–175, Paris, France, 2019. Springer, Cham.
 
 [fxtbook] J. Arndt. Matters Computational - Ideas, Algorithms, Source Code 
  Published electronically at http://www.jjj.de, 2010.

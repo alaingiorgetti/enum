@@ -13,17 +13,13 @@
 # Used file path list
 DIRS?= -L .. -L ../.. -L ../barray
 
-.PHONY: test filter run ide prove extract clean
-
-test:
-	@echo "1. Boolean function b_sorted is sound?"
-	@bash ../../bet.sh "$(DIRS)" Sorted.mlw Sorted__SortedSound.test_b_sorted
+.PHONY: filter run ide prove extract clean
 
 filter:
-	why3 execute $(DIRS) Sorted.mlw FilterDemo.run
+	why3 execute $(DIRS) Sorted.mlw --use=FilterDemo 'run ()'
 
 run:
-	why3 execute $(DIRS) Sorted.mlw Test.run
+	why3 execute $(DIRS) Sorted.mlw --use=Test 'run ()'
 
 ide:
 	why3 ide $(DIRS) Sorted.mlw
@@ -31,7 +27,7 @@ ide:
 replay:
 	why3 replay $(DIRS) Sorted
 
-# Extract WhyML code to OCaml. Folder /enum/OCaml/sorted is assumed to exist.
+# Extract WhyML code to OCaml. Folder /enum/OCaml/generator/sorted is assumed to exist.
 extract:
 	why3 extract --modular --recursive -D ocaml64 $(DIRS) -o ../../../OCaml/generator/sorted Sorted.mlw
 

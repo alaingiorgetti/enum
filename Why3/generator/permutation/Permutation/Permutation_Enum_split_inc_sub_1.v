@@ -8,6 +8,7 @@ Require map.Map.
 Require map.Occ.
 Require map.MapPermut.
 Require map.MapInjection.
+Require list.List.
 
 (* Why3 assumption *)
 Inductive ref (a:Type) :=
@@ -63,28 +64,44 @@ Axiom make_spec :
   ((length (make n v)) = n).
 
 (* Why3 assumption *)
-Definition exchange {a:Type} {a_WT:WhyType a} (a1:Numbers.BinNums.Z -> a)
-    (a2:Numbers.BinNums.Z -> a) (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z)
-    (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z) : Prop :=
-  ((l <= i)%Z /\ (i < u)%Z) /\
-  ((l <= j)%Z /\ (j < u)%Z) /\
-  ((a1 i) = (a2 j)) /\
-  ((a1 j) = (a2 i)) /\
-  (forall (k:Numbers.BinNums.Z), (l <= k)%Z /\ (k < u)%Z -> ~ (k = i) ->
-   ~ (k = j) -> ((a1 k) = (a2 k))).
-
-Axiom exchange_set :
-  forall {a:Type} {a_WT:WhyType a},
-  forall (a1:Numbers.BinNums.Z -> a) (l:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z),
-  (l <= i)%Z /\ (i < u)%Z -> (l <= j)%Z /\ (j < u)%Z ->
-  exchange a1 (map.Map.set (map.Map.set a1 i (a1 j)) j (a1 i)) l u i j.
+Definition injective (a:array Numbers.BinNums.Z) : Prop :=
+  map.MapInjection.injective (elts a) (length a).
 
 (* Why3 assumption *)
-Definition exchange1 {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a)
-    (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z) : Prop :=
-  ((length a1) = (length a2)) /\
-  exchange (elts a1) (elts a2) 0%Z (length a1) i j.
+Definition surjective (a:array Numbers.BinNums.Z) : Prop :=
+  map.MapInjection.surjective (elts a) (length a).
+
+(* Why3 assumption *)
+Definition range (a:array Numbers.BinNums.Z) : Prop :=
+  map.MapInjection.range (elts a) (length a).
+
+(* Why3 assumption *)
+Definition range_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
+    (u:Numbers.BinNums.Z) (b:Numbers.BinNums.Z) : Prop :=
+  forall (i:Numbers.BinNums.Z), (l <= i)%Z /\ (i < u)%Z ->
+  (0%Z <= (elts a i))%Z /\ ((elts a i) < b)%Z.
+
+(* Why3 assumption *)
+Definition inj_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
+    (u:Numbers.BinNums.Z) : Prop :=
+  forall (i:Numbers.BinNums.Z), (l <= i)%Z /\ (i < u)%Z ->
+  forall (j:Numbers.BinNums.Z), (l <= j)%Z /\ (j < u)%Z -> ~ (i = j) ->
+  ~ ((elts a i) = (elts a j)).
+
+Axiom injective_surjective :
+  forall (a:array Numbers.BinNums.Z), injective a -> range a -> surjective a.
+
+Axiom injection_occ :
+  forall (a:array Numbers.BinNums.Z),
+  injective a <->
+  (forall (v:Numbers.BinNums.Z),
+   ((map.Occ.occ v (elts a) 0%Z (length a)) <= 1%Z)%Z).
+
+Axiom endoinjection_occ :
+  forall (a:array Numbers.BinNums.Z),
+  map.MapInjection.range (elts a) (length a) /\ injective a ->
+  forall (v:Numbers.BinNums.Z), (0%Z <= v)%Z /\ (v < (length a))%Z ->
+  ((map.Occ.occ v (elts a) 0%Z (length a)) = 1%Z).
 
 (* Why3 assumption *)
 Definition map_eq_sub {a:Type} {a_WT:WhyType a} (a1:Numbers.BinNums.Z -> a)
@@ -105,180 +122,6 @@ Definition array_eq {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a) :
     Prop :=
   ((length a1) = (length a2)) /\
   map_eq_sub (elts a1) (elts a2) 0%Z (length a1).
-
-(* Why3 assumption *)
-Definition permut {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a)
-    (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z) : Prop :=
-  ((length a1) = (length a2)) /\
-  ((0%Z <= l)%Z /\ (l <= (length a1))%Z) /\
-  ((0%Z <= u)%Z /\ (u <= (length a1))%Z) /\
-  map.MapPermut.permut (elts a1) (elts a2) l u.
-
-(* Why3 assumption *)
-Definition permut_sub {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a)
-    (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z) : Prop :=
-  map_eq_sub (elts a1) (elts a2) 0%Z l /\
-  permut a1 a2 l u /\ map_eq_sub (elts a1) (elts a2) u (length a1).
-
-(* Why3 assumption *)
-Definition permut_all {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a) :
-    Prop :=
-  ((length a1) = (length a2)) /\
-  map.MapPermut.permut (elts a1) (elts a2) 0%Z (length a1).
-
-Axiom exchange_permut_sub :
-  forall {a:Type} {a_WT:WhyType a},
-  forall (a1:array a) (a2:array a) (i:Numbers.BinNums.Z)
-    (j:Numbers.BinNums.Z) (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z),
-  exchange1 a1 a2 i j -> (l <= i)%Z /\ (i < u)%Z ->
-  (l <= j)%Z /\ (j < u)%Z -> (0%Z <= l)%Z -> (u <= (length a1))%Z ->
-  permut_sub a1 a2 l u.
-
-Axiom permut_sub_weakening :
-  forall {a:Type} {a_WT:WhyType a},
-  forall (a1:array a) (a2:array a) (l1:Numbers.BinNums.Z)
-    (u1:Numbers.BinNums.Z) (l2:Numbers.BinNums.Z) (u2:Numbers.BinNums.Z),
-  permut_sub a1 a2 l1 u1 -> (0%Z <= l2)%Z /\ (l2 <= l1)%Z ->
-  (u1 <= u2)%Z /\ (u2 <= (length a1))%Z -> permut_sub a1 a2 l2 u2.
-
-Axiom exchange_permut_all :
-  forall {a:Type} {a_WT:WhyType a},
-  forall (a1:array a) (a2:array a) (i:Numbers.BinNums.Z)
-    (j:Numbers.BinNums.Z),
-  exchange1 a1 a2 i j -> permut_all a1 a2.
-
-Axiom occ_append_instance :
-  forall {a:Type} {a_WT:WhyType a},
-  forall (v:a) (m:Numbers.BinNums.Z -> a) (mid:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z),
-  (0%Z <= mid)%Z /\ (mid <= u)%Z ->
-  ((map.Occ.occ v m 0%Z u) =
-   ((map.Occ.occ v m 0%Z mid) + (map.Occ.occ v m mid u))%Z).
-
-Axiom permut_split :
-  forall {a:Type} {a_WT:WhyType a},
-  forall (a1:Numbers.BinNums.Z -> a) (b:Numbers.BinNums.Z -> a)
-    (l:Numbers.BinNums.Z) (i:Numbers.BinNums.Z) (u:Numbers.BinNums.Z),
-  (l <= i)%Z /\ (i < u)%Z -> map.MapPermut.permut a1 b l u ->
-  map.MapPermut.permut a1 b l i -> map.MapPermut.permut a1 b i u.
-
-(* Why3 assumption *)
-Definition is_id_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) : Prop :=
-  forall (i:Numbers.BinNums.Z), (l <= i)%Z /\ (i < u)%Z ->
-  ((mixfix_lbrb a i) = i).
-
-(* Why3 assumption *)
-Definition is_id (a:array Numbers.BinNums.Z) : Prop :=
-  is_id_sub a 0%Z (length a).
-
-(* Why3 assumption *)
-Definition injective (a:array Numbers.BinNums.Z) : Prop :=
-  map.MapInjection.injective (elts a) (length a).
-
-(* Why3 assumption *)
-Definition surjective (a:array Numbers.BinNums.Z) : Prop :=
-  map.MapInjection.surjective (elts a) (length a).
-
-(* Why3 assumption *)
-Definition range (a:array Numbers.BinNums.Z) : Prop :=
-  map.MapInjection.range (elts a) (length a).
-
-Axiom injective_surjective :
-  forall (a:array Numbers.BinNums.Z), injective a -> range a -> surjective a.
-
-Axiom injection_occ :
-  forall (a:array Numbers.BinNums.Z),
-  injective a <->
-  (forall (v:Numbers.BinNums.Z),
-   ((map.Occ.occ v (elts a) 0%Z (length a)) <= 1%Z)%Z).
-
-Axiom endoinjection_occ :
-  forall (a:array Numbers.BinNums.Z),
-  map.MapInjection.range (elts a) (length a) /\ injective a ->
-  forall (v:Numbers.BinNums.Z), (0%Z <= v)%Z /\ (v < (length a))%Z ->
-  ((map.Occ.occ v (elts a) 0%Z (length a)) = 1%Z).
-
-(* Why3 assumption *)
-Definition in_interval (x:Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) : Prop :=
-  (l <= x)%Z /\ (x < u)%Z.
-
-(* Why3 assumption *)
-Definition range_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) (b:Numbers.BinNums.Z) : Prop :=
-  forall (i:Numbers.BinNums.Z), (l <= i)%Z /\ (i < u)%Z ->
-  in_interval (mixfix_lbrb a i) 0%Z b.
-
-(* Why3 assumption *)
-Definition inj_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) : Prop :=
-  forall (i:Numbers.BinNums.Z), (l <= i)%Z /\ (i < u)%Z ->
-  forall (j:Numbers.BinNums.Z), (l <= j)%Z /\ (j < u)%Z -> ~ (i = j) ->
-  ~ ((elts a i) = (elts a j)).
-
-(* Why3 assumption *)
-Definition diff_sub (a:array Numbers.BinNums.Z) (i:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) : Prop :=
-  forall (j:Numbers.BinNums.Z), (0%Z <= j)%Z /\ (j < u)%Z -> ~ (i = j) ->
-  ~ ((mixfix_lbrb a i) = (mixfix_lbrb a j)).
-
-(* Why3 assumption *)
-Definition diff (a:array Numbers.BinNums.Z) (i:Numbers.BinNums.Z) : Prop :=
-  forall (j:Numbers.BinNums.Z), (0%Z <= j)%Z /\ (j < (length a))%Z ->
-  ~ (i = j) -> ~ ((mixfix_lbrb a i) = (mixfix_lbrb a j)).
-
-Parameter b_diff:
-  array Numbers.BinNums.Z -> Numbers.BinNums.Z -> Init.Datatypes.bool.
-
-Axiom b_diff_spec :
-  forall (a:array Numbers.BinNums.Z) (i:Numbers.BinNums.Z),
-  (0%Z <= i)%Z /\ (i < (length a))%Z ->
-  ((b_diff a i) = Init.Datatypes.true) <-> diff a i.
-
-(* Why3 assumption *)
-Definition inj_sub2 (a:array Numbers.BinNums.Z) (u:Numbers.BinNums.Z) : Prop :=
-  forall (i:Numbers.BinNums.Z), (0%Z <= i)%Z /\ (i < u)%Z -> diff a i.
-
-Parameter b_inj: array Numbers.BinNums.Z -> Init.Datatypes.bool.
-
-Axiom b_inj_spec :
-  forall (a:array Numbers.BinNums.Z),
-  ((b_inj a) = Init.Datatypes.true) <-> injective a.
-
-Parameter b_range: array Numbers.BinNums.Z -> Init.Datatypes.bool.
-
-Axiom b_range_spec :
-  forall (a:array Numbers.BinNums.Z),
-  ((b_range a) = Init.Datatypes.true) <-> range a.
-
-(* Why3 assumption *)
-Definition is_inc_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) : Prop :=
-  forall (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z),
-  (l <= i)%Z /\ (i < j)%Z /\ (j < u)%Z ->
-  ((mixfix_lbrb a i) < (mixfix_lbrb a j))%Z.
-
-(* Why3 assumption *)
-Definition is_inc (a:array Numbers.BinNums.Z) : Prop :=
-  is_inc_sub a 0%Z (length a).
-
-Parameter b_inc: array Numbers.BinNums.Z -> Init.Datatypes.bool.
-
-Axiom b_inc_spec :
-  forall (a:array Numbers.BinNums.Z),
-  ((b_inc a) = Init.Datatypes.true) <-> is_inc a.
-
-(* Why3 assumption *)
-Definition is_dec_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
-    (u:Numbers.BinNums.Z) : Prop :=
-  forall (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z),
-  (l <= i)%Z /\ (i < j)%Z /\ (j < u)%Z ->
-  ((mixfix_lbrb a j) < (mixfix_lbrb a i))%Z.
-
-(* Why3 assumption *)
-Definition is_dec (a:array Numbers.BinNums.Z) : Prop :=
-  is_dec_sub a 0%Z (length a).
 
 (* Why3 assumption *)
 Definition lt_lex_sub_at (a1:array Numbers.BinNums.Z)
@@ -337,25 +180,84 @@ Axiom total_order :
   ~ lt_lex_sub b a l u -> le_lex_sub a b l u.
 
 (* Why3 assumption *)
+Definition exchange {a:Type} {a_WT:WhyType a} (a1:Numbers.BinNums.Z -> a)
+    (a2:Numbers.BinNums.Z -> a) (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z)
+    (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z) : Prop :=
+  ((l <= i)%Z /\ (i < u)%Z) /\
+  ((l <= j)%Z /\ (j < u)%Z) /\
+  ((a1 i) = (a2 j)) /\
+  ((a1 j) = (a2 i)) /\
+  (forall (k:Numbers.BinNums.Z), (l <= k)%Z /\ (k < u)%Z -> ~ (k = i) ->
+   ~ (k = j) -> ((a1 k) = (a2 k))).
+
+Axiom exchange_set :
+  forall {a:Type} {a_WT:WhyType a},
+  forall (a1:Numbers.BinNums.Z -> a) (l:Numbers.BinNums.Z)
+    (u:Numbers.BinNums.Z) (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z),
+  (l <= i)%Z /\ (i < u)%Z -> (l <= j)%Z /\ (j < u)%Z ->
+  exchange a1 (map.Map.set (map.Map.set a1 i (a1 j)) j (a1 i)) l u i j.
+
+(* Why3 assumption *)
+Definition exchange1 {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a)
+    (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z) : Prop :=
+  ((length a1) = (length a2)) /\
+  exchange (elts a1) (elts a2) 0%Z (length a1) i j.
+
+(* Why3 assumption *)
+Definition permut {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a)
+    (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z) : Prop :=
+  ((length a1) = (length a2)) /\
+  ((0%Z <= l)%Z /\ (l <= (length a1))%Z) /\
+  ((0%Z <= u)%Z /\ (u <= (length a1))%Z) /\
+  map.MapPermut.permut (elts a1) (elts a2) l u.
+
+(* Why3 assumption *)
+Definition permut_sub {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a)
+    (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z) : Prop :=
+  map_eq_sub (elts a1) (elts a2) 0%Z l /\
+  permut a1 a2 l u /\ map_eq_sub (elts a1) (elts a2) u (length a1).
+
+(* Why3 assumption *)
+Definition permut_all {a:Type} {a_WT:WhyType a} (a1:array a) (a2:array a) :
+    Prop :=
+  ((length a1) = (length a2)) /\
+  map.MapPermut.permut (elts a1) (elts a2) 0%Z (length a1).
+
+Axiom exchange_permut_sub :
+  forall {a:Type} {a_WT:WhyType a},
+  forall (a1:array a) (a2:array a) (i:Numbers.BinNums.Z)
+    (j:Numbers.BinNums.Z) (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z),
+  exchange1 a1 a2 i j -> (l <= i)%Z /\ (i < u)%Z ->
+  (l <= j)%Z /\ (j < u)%Z -> (0%Z <= l)%Z -> (u <= (length a1))%Z ->
+  permut_sub a1 a2 l u.
+
+Axiom permut_sub_weakening :
+  forall {a:Type} {a_WT:WhyType a},
+  forall (a1:array a) (a2:array a) (l1:Numbers.BinNums.Z)
+    (u1:Numbers.BinNums.Z) (l2:Numbers.BinNums.Z) (u2:Numbers.BinNums.Z),
+  permut_sub a1 a2 l1 u1 -> (0%Z <= l2)%Z /\ (l2 <= l1)%Z ->
+  (u1 <= u2)%Z /\ (u2 <= (length a1))%Z -> permut_sub a1 a2 l2 u2.
+
+Axiom exchange_permut_all :
+  forall {a:Type} {a_WT:WhyType a},
+  forall (a1:array a) (a2:array a) (i:Numbers.BinNums.Z)
+    (j:Numbers.BinNums.Z),
+  exchange1 a1 a2 i j -> permut_all a1 a2.
+
+(* Why3 assumption *)
 Definition is_permut (a:array Numbers.BinNums.Z) : Prop :=
   range a /\ injective a.
-
-Parameter b_permut: array Numbers.BinNums.Z -> Init.Datatypes.bool.
-
-Axiom b_permut_def :
-  forall (a:array Numbers.BinNums.Z),
-  (((b_range a) = Init.Datatypes.true) -> ((b_permut a) = (b_inj a))) /\
-  (~ ((b_range a) = Init.Datatypes.true) ->
-   ((b_permut a) = Init.Datatypes.false)).
-
-Axiom b_permut_spec :
-  forall (a:array Numbers.BinNums.Z),
-  ((b_permut a) = Init.Datatypes.true) <-> is_permut a.
 
 Axiom endoinj_permut :
   forall (a:array Numbers.BinNums.Z) (b:array Numbers.BinNums.Z),
   ((0%Z <= (length a))%Z /\ ((length a) = (length b))) /\
   is_permut a /\ is_permut b -> permut a b 0%Z (length a).
+
+(* Why3 assumption *)
+Definition is_id_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
+    (u:Numbers.BinNums.Z) : Prop :=
+  forall (i:Numbers.BinNums.Z), (l <= i)%Z /\ (i < u)%Z ->
+  ((mixfix_lbrb a i) = i).
 
 (* Why3 assumption *)
 Definition im_sup1 (a:array Numbers.BinNums.Z) (r:Numbers.BinNums.Z)
@@ -368,6 +270,24 @@ Definition im_sup2 (a:array Numbers.BinNums.Z) (r:Numbers.BinNums.Z)
     (k:Numbers.BinNums.Z) : Prop :=
   forall (i:Numbers.BinNums.Z), (k < i)%Z /\ (i < (length a))%Z ->
   ((mixfix_lbrb a i) < (mixfix_lbrb a r))%Z.
+
+(* Why3 assumption *)
+Definition is_inc_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
+    (u:Numbers.BinNums.Z) : Prop :=
+  forall (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z),
+  (l <= i)%Z /\ (i < j)%Z /\ (j < u)%Z ->
+  ((mixfix_lbrb a i) < (mixfix_lbrb a j))%Z.
+
+(* Why3 assumption *)
+Definition is_inc (a:array Numbers.BinNums.Z) : Prop :=
+  is_inc_sub a 0%Z (length a).
+
+(* Why3 assumption *)
+Definition is_dec_sub (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
+    (u:Numbers.BinNums.Z) : Prop :=
+  forall (i:Numbers.BinNums.Z) (j:Numbers.BinNums.Z),
+  (l <= i)%Z /\ (i < j)%Z /\ (j < u)%Z ->
+  ((mixfix_lbrb a j) < (mixfix_lbrb a i))%Z.
 
 Axiom min_lex_sub :
   forall (a:array Numbers.BinNums.Z) (l:Numbers.BinNums.Z)
@@ -382,6 +302,40 @@ Axiom max_lex_sub :
   ((0%Z <= l)%Z /\ (l < u)%Z /\ (u <= (length a))%Z) /\
   injective a /\ is_dec_sub a l u -> forall (b:array Numbers.BinNums.Z),
   permut a b l u /\ injective b -> le_lex_sub b a l u.
+
+(* Why3 assumption *)
+Definition min_lex (a:array Numbers.BinNums.Z) : Prop :=
+  forall (b:array Numbers.BinNums.Z),
+  ((length a) = (length b)) /\ is_permut b -> le_lex_sub a b 0%Z (length a).
+
+(* Why3 assumption *)
+Definition max_lex (a:array Numbers.BinNums.Z) : Prop :=
+  forall (b:array Numbers.BinNums.Z),
+  ((length a) = (length b)) /\ is_permut b -> le_lex_sub b a 0%Z (length a).
+
+(* Why3 assumption *)
+Definition inc (a1:array Numbers.BinNums.Z) (a2:array Numbers.BinNums.Z) :
+    Prop :=
+  ((length a1) = (length a2)) /\
+  lt_lex_sub a1 a2 0%Z (length a1) /\
+  (forall (a3:array Numbers.BinNums.Z),
+   ((length a1) = (length a3)) /\
+   is_permut a3 /\ lt_lex_sub a1 a3 0%Z (length a1) ->
+   le_lex_sub a2 a3 0%Z (length a1)).
+
+Axiom occ_append_instance :
+  forall {a:Type} {a_WT:WhyType a},
+  forall (v:a) (m:Numbers.BinNums.Z -> a) (mid:Numbers.BinNums.Z)
+    (u:Numbers.BinNums.Z),
+  (0%Z <= mid)%Z /\ (mid <= u)%Z ->
+  ((map.Occ.occ v m 0%Z u) =
+   ((map.Occ.occ v m 0%Z mid) + (map.Occ.occ v m mid u))%Z).
+
+Axiom permut_split :
+  forall (a:array Numbers.BinNums.Z) (b:array Numbers.BinNums.Z)
+    (i:Numbers.BinNums.Z),
+  (0%Z <= i)%Z /\ (i < (length a))%Z /\ ((length a) = (length b)) ->
+  permut a b 0%Z (length a) -> permut a b 0%Z i -> permut a b i (length a).
 
 (* Why3 assumption *)
 Inductive cursor :=
@@ -400,26 +354,6 @@ Definition current (v:cursor) : array Numbers.BinNums.Z :=
   match v with
   | mk_cursor x x1 => x
   end.
-
-(* Why3 assumption *)
-Definition min_lex (a:array Numbers.BinNums.Z) : Prop :=
-  forall (b:array Numbers.BinNums.Z),
-  ((length a) = (length b)) /\ is_permut b -> le_lex_sub a b 0%Z (length a).
-
-(* Why3 assumption *)
-Definition max_lex (a:array Numbers.BinNums.Z) : Prop :=
-  forall (b:array Numbers.BinNums.Z),
-  ((length a) = (length b)) /\ is_permut b -> le_lex_sub b a 0%Z (length a).
-
-(* Why3 assumption *)
-Definition inc (a1:array Numbers.BinNums.Z) (a2:array Numbers.BinNums.Z) :
-    Prop :=
-  ((length a1) = (length a2)) /\
-  lt_lex_sub a1 a2 0%Z (length a1) /\
-  (forall (a3:array Numbers.BinNums.Z),
-   ((length a3) = (length a1)) /\
-   is_permut a3 /\ lt_lex_sub a1 a3 0%Z (length a1) ->
-   le_lex_sub a2 a3 0%Z (length a1)).
 
 (* Why3 assumption *)
 Definition sound (c:cursor) : Prop := is_permut (current c).

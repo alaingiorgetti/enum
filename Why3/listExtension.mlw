@@ -1,5 +1,6 @@
 (********************************************************************)
-(* Copyright 2018-19 Alain Giorgetti and Rémi Lazarini              *)
+(* Copyright (C) 2018-2021 Alain Giorgetti, Rémi Lazarini and       *)
+(*                                          Jérome Ricciardi        *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -7,31 +8,6 @@
 (*  This software is distributed under the terms of the GNU Lesser  *)
 (*  General Public License version 2.1                              *)
 (********************************************************************)
-
-(* Extensions of stdlib/list.mlw *)
-
-module ToArray
-  use int.Int
-  use array.Array
-  use list.List
-  use list.Length as L
-
-   let rec to_array_rec (l: list int) (a: array int) : unit
-    requires { L.length l <= a.length }
-    variant { L.length l }
-  =
-    match l with
-    | Nil -> ()
-    | Cons y m -> a[a.length - L.length l] <- y; to_array_rec m a
-    end
-
-  let to_array (l: list int) : array int
-  =
-    let a = make (L.length l) 0 in
-    to_array_rec l a;
-    a
-
-end
 
 
 module ListLengthExtension
@@ -56,7 +32,9 @@ module ListExtension
   use list.Length
   use list.Append
   use list.NthNoOpt
+  use list.Mem
   use ListLengthExtension
+  use option.Option
 
   (* For shorter Coq proofs. Proved with Alt-Ergo. *)
   lemma Length_not_nil: forall l: list 'a. length l > 0 <-> l <> Nil
@@ -109,5 +87,108 @@ module ListExtension
           z
         end
     end
+
+  (* `(make n v)` creates the list of size `n` containing only `v`. *)
+  (*  Similar to function `make` for arrays in stdlib.              *)
+  
+  let rec function make (n v: int) : list int
+    variant { n }
+    requires { n >= 0 }
+    ensures { result.length = n }
+    ensures { forall i. 0 <= i < n -> nth i result = v }
+  =
+    if n = 0 then Nil else Cons v (make (n-1) v)
+
+  let rec nth_func_rec (i: int) (l: list int) : int
+    variant { i }
+    requires { 0 <= i < length l }
+    ensures { result = nth i l }
+  = 
+    match 
+      l with Cons x r -> if i = 0 then x else nth_func_rec (i-1) r
+    end 
+    
+  let predicate in_interval (x l u: int) = l <= x < u
+
+  predicate range_sub (a: list int) (l u b: int) = forall i: int.
+    l <= i < u -> in_interval (nth i a) 0 b
+
+end
+
+
+module ArrayList
+
+  use int.Int
+  use array.Array
+  use array.ToList
+  use list.List
+  use list.Length as L
+  use list.NthNoOpt
+
+  predicate to_array_p_sub (m: list 'a) (a: array 'a) (l u: int) =
+   a.length = L.length m /\
+   forall i: int. l <= i < u -> nth i m = a[i]
+
+  predicate to_array_p (l: list 'a) (a: array 'a) =
+   a.length = L.length l /\
+   forall i: int. 0 <= i < a.length -> nth i l = a[i]
+     
+  let rec to_array_rec (l: list int) (a: array int) : unit
+    requires { L.length l <= a.length }
+    variant { L.length l }
+    ensures { L.length l <= a.length }
+  =
+    match l with
+    | Nil -> ()
+    | Cons y m -> a[a.length - L.length l] <- y; to_array_rec m a
+    end
+
+  let function to_array (l: list int) : array int
+    requires { L.length l >= 0 }
+    ensures { L.length l = result.length }
+  =
+    let a = make (L.length l) 0 in
+    to_array_rec l a;
+    a
+    
+  predicate to_list_p (a: array int) (l: list int) =
+     a.length = L.length l /\
+     forall i: int. 0 <= i < (a.length) -> nth i l = a[i]
+
+  (** Proved with CVC4 1.6 *)
+  lemma bijection_array_list:
+    forall a: array int, l: list int.
+    to_array_p l a <-> to_list_p a l 
+    
+end
+
+
+module Cte
+
+  use int.Int
+  use list.List
+  use list.Length
+  use list.NthNoOpt
+
+  predicate cte_sub (a: list int) (l u b: int) =
+    forall i:int. l <= i < u -> nth i a = b
+
+  predicate cte (a: list int) (b: int) = cte_sub a 0 (length a) b
+
+end
+
+module ListEq
+
+  use int.Int
+  use list.List
+  use list.Length
+  use list.NthNoOpt
+
+  predicate list_eq_sub (a1 a2: list 'a) (l u: int) =
+    length a1 = length a2 /\ 0 <= l <= length a1 /\ 0 <= u <= length a1 /\
+    forall i: int. l <= i < u -> nth i a1 = nth i a2
+
+  predicate list_eq (a1 a2: list 'a) =
+    length a1 = length a2 /\ list_eq_sub a1 a2 0 (length a1)
 
 end

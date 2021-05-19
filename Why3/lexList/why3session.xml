@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="6">
+<prover id="2" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="whyml" proved="true">
+<path name=".."/><path name="lexList.mlw"/>
+<theory name="Lex" proved="true">
+ <goal name="list_eq_cons" proved="true">
+ <proof prover="2"><result status="valid" time="0.07" steps="9035"/></proof>
+ </goal>
+ <goal name="l_lt_lex" proved="true">
+ <proof prover="2"><result status="valid" time="0.06" steps="8623"/></proof>
+ </goal>
+ <goal name="l_le_lex" proved="true">
+ <proof prover="2"><result status="valid" time="0.05" steps="6207"/></proof>
+ </goal>
+ <goal name="total_order&#39;vc" expl="VC for total_order" proved="true">
+ <proof prover="2"><result status="valid" time="0.04" steps="6411"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>

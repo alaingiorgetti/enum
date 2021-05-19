@@ -1,5 +1,5 @@
 (***************************************************************************)
-(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti                   *)
+(* Copyright (C) 2019-2021 Clotilde Erard and Alain Giorgetti              *)
 (* FEMTO-ST institute                                                      *)
 (***************************************************************************)
 
@@ -13,7 +13,7 @@ module Rgf
   use int.Int
   use array.Array
 
-  predicate is_rgf_sub (a:array int) (l u:int) = a[0] = 0 /\ 
+  predicate is_rgf_sub (a:array int) (l u: int) = a[0] = 0 /\
     forall i:int. l <= i < u -> 0 <= a[i] <= a[i-1]+1
 
   predicate is_rgf (a:array int) = a.length = 0 \/ is_rgf_sub a 1 a.length
@@ -24,7 +24,7 @@ module Rgf
     let n = a.length in
     if n = 0 then
       return true
-    else 
+    else
       if a[0] <> 0 then
         return false
       else
@@ -61,6 +61,7 @@ module Enum
     { current = a; new = true }
 
   let next (c: cursor) : unit
+    writes   { c.current, c.new }
     requires { sound c }
     ensures  { sound c }
     ensures  { c.current.length = (old c).current.length }
@@ -104,7 +105,7 @@ module RgfSound
   use int.Int
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use Rgf
   use Enum 
 
@@ -147,7 +148,7 @@ module FilterDemo
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use RgfEndo
   use lexgen.Cursor
 
@@ -176,7 +177,7 @@ module Test
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use Rgf
   use Enum
   use lexgen.Cursor

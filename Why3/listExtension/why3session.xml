@@ -1,38 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
 "http://why3.lri.fr/why3session.dtd">
-<why3session shape_version="7">
-<prover id="0" name="Alt-Ergo" version="2.2.0" timelimit="5" steplimit="0" memlimit="1000"/>
-<file proved="true">
+<why3session shape_version="6">
+<prover id="0" name="Alt-Ergo" version="2.4.0" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="3" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="whyml" proved="true">
 <path name=".."/><path name="listExtension.mlw"/>
-<theory name="ToArray" proved="true">
- <goal name="VC to_array_rec" expl="VC for to_array_rec" proved="true">
- <proof prover="0"><result status="valid" time="0.01" steps="27"/></proof>
- </goal>
- <goal name="VC to_array" expl="VC for to_array" proved="true">
- <proof prover="0"><result status="valid" time="0.00" steps="1"/></proof>
- </goal>
-</theory>
 <theory name="ListLengthExtension" proved="true">
  <goal name="Length_cons" proved="true">
- <proof prover="0"><result status="valid" time="0.00" steps="2"/></proof>
+ <proof prover="3"><result status="valid" time="0.03" steps="2582"/></proof>
  </goal>
  <goal name="Length_cons_pos" proved="true">
- <proof prover="0"><result status="valid" time="0.00" steps="15"/></proof>
+ <proof prover="3"><result status="valid" time="0.04" steps="3359"/></proof>
  </goal>
 </theory>
 <theory name="ListExtension" proved="true">
  <goal name="Length_not_nil" proved="true">
- <proof prover="0"><result status="valid" time="0.00" steps="5"/></proof>
+ <proof prover="3"><result status="valid" time="0.04" steps="5879"/></proof>
  </goal>
- <goal name="VC id_aux" expl="VC for id_aux" proved="true">
- <proof prover="0"><result status="valid" time="0.01" steps="102"/></proof>
+ <goal name="id_aux&#39;vc" expl="VC for id_aux" proved="true">
+ <proof prover="3"><result status="valid" time="0.09" steps="10097"/></proof>
  </goal>
- <goal name="VC id" expl="VC for id" proved="true">
- <proof prover="0"><result status="valid" time="0.00" steps="24"/></proof>
+ <goal name="id&#39;vc" expl="VC for id" proved="true">
+ <proof prover="3"><result status="valid" time="0.05" steps="6093"/></proof>
  </goal>
- <goal name="VC rm_nth" expl="VC for rm_nth" proved="true">
- <proof prover="0"><result status="valid" time="0.03" steps="159"/></proof>
+ <goal name="rm_nth&#39;vc" expl="VC for rm_nth" proved="true">
+ <proof prover="3"><result status="valid" time="0.12" steps="13728"/></proof>
+ </goal>
+ <goal name="make&#39;vc" expl="VC for make" proved="true">
+ <proof prover="0"><result status="valid" time="0.03" steps="111"/></proof>
+ <proof prover="3"><result status="valid" time="0.06" steps="8922"/></proof>
+ </goal>
+ <goal name="nth_func_rec&#39;vc" expl="VC for nth_func_rec" proved="true">
+ <proof prover="0"><result status="valid" time="0.01" steps="87"/></proof>
+ <proof prover="3"><result status="valid" time="0.07" steps="8476"/></proof>
+ </goal>
+</theory>
+<theory name="ArrayList" proved="true">
+ <goal name="to_array_rec&#39;vc" expl="VC for to_array_rec" proved="true">
+ <proof prover="3"><result status="valid" time="0.07" steps="10020"/></proof>
+ </goal>
+ <goal name="to_array&#39;vc" expl="VC for to_array" proved="true">
+ <proof prover="3"><result status="valid" time="0.05" steps="7407"/></proof>
+ </goal>
+ <goal name="bijection_array_list" proved="true">
+ <proof prover="3"><result status="valid" time="0.04" steps="6061"/></proof>
  </goal>
 </theory>
 </file>

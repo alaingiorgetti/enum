@@ -1,0 +1,88 @@
+(********************************************************************)
+(* Copyright (C) 2021 Alain Giorgetti and Jérome Ricciardi          *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+(** Lexicographic order *)
+
+module Lex
+
+  use int.Int
+  use list.List
+  use list.Length
+  use list.NthNoOpt
+
+  let rec predicate list_eq (l1 l2: list int) =
+    length l1 = length l2 &&
+    match l1 with 
+    | Nil ->
+       match l2 with
+       | Nil -> true
+       | _ -> false
+       end
+    | Cons x1 r1 ->
+      match l2 with 
+      | Nil -> false
+      | Cons x2 r2 -> x1 = x2 && list_eq r1 r2
+      end 
+    end
+
+  lemma list_eq_cons: 
+    forall l1 l2: list int, x1 x2: int.
+      list_eq (Cons x1 l1) (Cons x2 l2) <-> list_eq l1 l2 /\ x1 = x2
+  
+  let rec predicate lt_lex (l1 l2: list int) =
+    length l1 = length l2 &&
+    match l1 with
+    | Nil -> 
+      match l2 with
+      | Nil -> false        (* if `l1` and `l2` are `Nil` *)
+      | _ -> true
+      end
+    | Cons x1 r1 ->
+      match l2 with
+      | Nil -> false
+      | Cons x2 r2 -> x1 < x2 || (x1 = x2 && lt_lex r1 r2)
+      end
+    end
+
+  lemma l_lt_lex: 
+    forall l1 l2: list int, x1 x2: int.
+      length l1 = length l2 /\ x1 < x2 -> lt_lex (Cons x1 l1) (Cons x2 l2)
+  
+  predicate le_lex (l1 l2: list int) = lt_lex l1 l2 \/ list_eq l1 l2  
+
+  lemma l_le_lex:
+    forall l1 l2: list int, x1 x2: int.  
+      ((list_eq (Cons x1 l1) (Cons x2 l2) <-> list_eq l1 l2) /\ x1 = x2) \/
+      (length l1 = length l2 /\ x1 < x2 -> lt_lex (Cons x1 l1) (Cons x2 l2))
+
+  let rec lemma total_order (l1 l2: list int) : bool
+    requires { length l1 = length l2 }
+    requires { le_lex l1 l2 \/ lt_lex l2 l1 }
+    variant { l1 }
+    ensures { result }
+  =
+    match l1 with
+      | Nil -> 
+        match l2 with
+        | Nil -> true
+        | _   -> false
+        end
+      | Cons x1 r1 -> 
+        match l2 with
+        | Nil -> false
+        | Cons x2 r2 -> 
+            if (x1 <= x2 || x2 < x1) 
+            then true
+            else total_order r1 r2
+        end
+        
+    end
+
+end

@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
 "http://why3.lri.fr/why3session.dtd">
-<why3session shape_version="7">
-<prover id="0" name="Z3" version="4.7.1" timelimit="5" steplimit="0" memlimit="1000"/>
-<prover id="1" name="Alt-Ergo" version="2.2.0" timelimit="5" steplimit="0" memlimit="1000"/>
-<file proved="true">
+<why3session shape_version="6">
+<prover id="0" name="Alt-Ergo" version="2.4.0" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="1" name="Z3" version="4.8.10" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="2" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="whyml" proved="true">
 <path name=".."/><path name="lex.mlw"/>
 <theory name="Lex" proved="true">
  <goal name="prefix_le_lex_sub" proved="true">
- <proof prover="0"><result status="valid" time="0.06"/></proof>
+ <proof prover="1"><result status="valid" time="0.06" steps="89277"/></proof>
+ <proof prover="2"><result status="unknown" time="0.26" steps="26708"/></proof>
  </goal>
- <goal name="VC not_array_eq_sub" expl="VC for not_array_eq_sub" proved="true">
- <proof prover="1"><result status="valid" time="0.02" steps="233"/></proof>
+ <goal name="not_array_eq_sub&#39;vc" expl="VC for not_array_eq_sub" proved="true">
+ <proof prover="0"><result status="valid" time="0.04" steps="227"/></proof>
+ <proof prover="1"><result status="unknown" time="0.09" steps="234515"/></proof>
+ <proof prover="2"><result status="unknown" time="0.32" steps="42114"/></proof>
  </goal>
  <goal name="total_order" proved="true">
- <proof prover="0"><result status="valid" time="6.57"/></proof>
+ <proof prover="0"><result status="valid" time="0.38" steps="1560"/></proof>
+ <proof prover="1"><result status="unknown" time="0.12" steps="280613"/></proof>
+ <proof prover="2"><result status="unknown" time="0.64" steps="60862"/></proof>
  </goal>
 </theory>
 </file>

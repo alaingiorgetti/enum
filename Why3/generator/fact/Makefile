@@ -12,21 +12,19 @@
 
 DIRS?= -L .. -L ../..  -L ../endo
 
-.PHONY: test filter run ide prove extract clean
-
-test:
-	@echo "WARNING: Works only with the provided Dockerfile\n"
-	@echo "1. Boolean function b_fact is sound?"
-	@bash ../../bet.sh "$(DIRS)" Fact.mlw Fact__FactSound.test_b_fact
+.PHONY: filter run ide prove extract clean
 
 filter:
-	why3 execute $(DIRS) Fact.mlw FilterDemo.run
+	why3 execute $(DIRS) Fact.mlw --use=FilterDemo 'run ()'
 	
 run: 
-	why3 execute $(DIRS) Fact.mlw Test.run
+	why3 execute $(DIRS) Fact.mlw --use=Test 'run ()'
 
 ide:
 	why3 ide $(DIRS) Fact.mlw
+
+replay:
+	why3 replay $(DIRS) Fact
 
 prove: 
 	why3 prove -P alt-ergo $(DIRS) Fact.mlw

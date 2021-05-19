@@ -1,5 +1,5 @@
 (***************************************************************************)
-(* Copyright (C) 2018-19 Clotilde Erard, Alain Giorgetti and Rémi Lazarini *)
+(* Copyright (C) 2018-20 Clotilde Erard, Alain Giorgetti and Rémi Lazarini *)
 (* FEMTO-ST institute                                                      *)
 (***************************************************************************)
 
@@ -105,6 +105,87 @@ theory ArrayInjection
 end
 
 
+(** Quantifiers on sub-arrays *)
+module Quant
+  use int.Int
+  use array.Array
+  use Array as A
+
+  predicate for_all_sub_pred (p: 'a -> bool) (a: array 'a) (l u: int) =
+    forall i. l <= i <= u -> p a[i]
+
+  let function for_all_sub (p: 'a -> bool) (a: array 'a) (l u: int) : bool
+    requires { 0 <= l < length a }
+    requires { 0 <= u < length a }
+    ensures  { result <-> for_all_sub_pred p a l u }
+  =
+    for i = l to u do
+        invariant { l <= i <= u+1 }
+        invariant { for_all_sub_pred p a l (i-1) }
+        if not (p a[i]) then return false
+      done;
+      true
+
+  predicate for_all_pred (p: 'a -> bool) (a: array 'a) = for_all_sub_pred p a 0 (a.length-1)
+
+  let function for_all (p: 'a -> bool) (a: array 'a) : bool
+    ensures { result <-> for_all_pred p a }
+   = 
+    for i = 0 to a.length-1 do
+      invariant { 0 <= i <= a.length }
+      invariant { for_all_sub_pred p a 0 (i-1) }
+      if not (p a[i]) then return false
+    done;
+    true
+
+  predicate for_some_sub_pred (p: 'a -> bool) (a: array 'a) (l u: int) =
+    exists i. l <= i <= u && p a[i]
+
+  let function for_some_sub (p: 'a -> bool) (a: array 'a) (l u: int) : bool
+    requires { 0 <= l < length a }
+    requires { 0 <= u < length a }
+    ensures  { result <-> for_some_sub_pred p a l u }  
+  =
+    for i = l to u do
+        invariant { l <= i <= u+1 }
+        invariant { not (for_some_sub_pred p a l (i-1)) }
+        if p a[i] then return true
+      done;
+      false
+
+  predicate for_some_pred (p: 'a -> bool) (a: array 'a) = for_some_sub_pred p a 0 (a.length-1)
+
+  let function for_some (p: 'a -> bool) (a: array 'a) : bool
+    ensures { result <-> for_some_pred p a }
+  =
+    for i = 0 to a.length-1 do
+      invariant { 0 <= i <= a.length }
+      invariant { not (for_some_sub_pred p a 0 (i-1)) }
+      if p a[i] then return true
+    done;
+    false
+
+  predicate mem_sub_pred (eq:'a -> 'a -> bool) (x: 'a) (a: array 'a) (l u: int) =
+    for_some_sub_pred (eq x) a l u
+
+  let function mem_sub (eq:'a -> 'a -> bool) (x: 'a) (a: array 'a) (l u: int) : bool
+    requires { 0 <= l < length a }
+    requires { 0 <= u < length a }
+    ensures  { result <-> mem_sub_pred eq x a l u }
+  =
+    for_some_sub (eq x) a l u
+
+  predicate mem_pred (eq:'a -> 'a -> bool) (x: 'a) (a: array 'a) =
+    mem_sub_pred eq x a 0 (a.length-1)
+
+  let function mem (eq:'a -> 'a -> bool) (x: 'a) (a: array 'a) : bool
+    ensures  { result <-> mem_pred eq x a }
+  =
+    for_some (eq x) a
+
+end
+
+
 module ToList
 
   use int.Int
@@ -112,13 +193,10 @@ module ToList
   use array.ArrayEq
   use list.List
 
-
-  let rec to_list_sub (a: array 'a) (l u: int) : list 'a
-    requires { 0 <= l <= u <= a.length }
+  let rec function to_list (a: array int) (l u: int) : list int
+    requires { l >= 0 /\ u <= a.length }
     variant  { u - l }
-  = if u <= l then Nil else Cons a[l] (to_list_sub a (l+1) u)
-
-  let to_list (a: array 'a) : list 'a = to_list_sub a 0 a.length
+  = if u <= l then Nil else Cons a[l] (to_list a (l+1) u)
 
 end
 

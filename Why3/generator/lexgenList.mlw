@@ -1,0 +1,107 @@
+(********************************************************************)
+(* Copyright (C) 2021 Alain Giorgetti, Jérome Ricciardi             *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+module Cursor
+
+  use int.Int
+  use list.List
+
+  type cursor = {
+    mutable current: list int;  (* current list *)
+    mutable new: bool;          (* true iff current is a new list *)
+  }
+
+end
+
+
+(** {1 Refinement of lexicographic order with an integer parameter} *)
+
+module LexIntXX
+
+  use int.Int
+  use list.List
+  use list.Length
+  use export lexList.Lex
+  use Cursor
+
+  predicate is_XX (l: list int) (k: int)
+
+  (* `l` is the smallest XX in lexicographic order *)
+  predicate min_lex (l: list int) (k: int) = forall m: list int.
+    length l = length m -> is_XX m k -> le_lex l m  
+   
+  (* `l` is the largest XX in lexicographic order *)
+  predicate max_lex (l: list int) (k: int) = forall m: list int.
+    length l = length m /\ is_XX m k -> le_lex m l
+
+  (* `inc a1 a2` holds iff `a2` is the smallest array larger than `a1` *)
+  predicate inc (a1 a2: list int) (k: int) = (length a1) = (length a2) /\
+    is_XX a1 k /\ is_XX a2 k /\
+    lt_lex a1 a2 /\ forall a3: list int. (length a3) = (length a1) /\
+    is_XX a3 k /\ lt_lex a1 a3
+    -> le_lex a2 a3
+
+  predicate sound (c: cursor) (k: int) = is_XX c.current k
+
+end
+
+
+(* {2 Enumerative testing for data with type (list int) and an oracle with 
+  type list int -> bool} *)
+
+module SmallCheckInt
+
+  use option.Option
+  use int.Int
+  use ref.Ref
+  use export lexList.Lex
+  use list.List
+  use list.Length as L
+  use Cursor
+
+  predicate is_XXX (l: list int) (k: int)
+
+  clone export LexIntXX with
+    predicate is_XX = is_XXX
+
+  val create_cursor (n: int) (k: int) : cursor
+    requires { n >= 0 }
+    ensures  { result.new -> sound result k }
+
+  val next (c: cursor) (k: int) : unit
+    writes   { c.current, c.new }
+    requires { sound c k }
+    ensures  { c.new -> sound c k }
+
+  (* Type for BET output *)
+  type verdict = {
+    witness: option (list int); 
+    rank: int;         
+          
+  }
+
+  let small_check_int (oracle: list int -> int -> bool) (n k: int) : verdict
+    requires { n >= 0 }
+    diverges
+  =
+    let c = create_cursor n k in
+    let ref r = 0 in
+    while c.new do
+      invariant { c.new -> sound c k }
+      r := r+1;
+      let l = c.current in
+      if oracle l k then
+        next c k
+      else
+        return { witness = Some l; rank = r }
+    done;
+    { witness = None; rank = r }
+
+end

@@ -1,5 +1,5 @@
 (********************************************************************)
-(* Copyright (C) 2019 Alain Giorgetti and Clotilde Erard            *)
+(* Copyright (C) 2019-2021 Alain Giorgetti and Clotilde Erard       *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -17,6 +17,9 @@ module Permutation
   use export arrayExtension.Inc
   use export arrayExtension.Dec
   use lex.Lex
+
+  predicate is_permut_sub (a:array int) (l u:int) =
+    range_sub a l u u /\ inj_sub a l u
 
   predicate is_permut (a:array int) = range a /\ injective a
 
@@ -50,6 +53,7 @@ end
 module Enum
 
   use int.Int
+  use int.EuclideanDivision
   use ref.Ref
   use array.Array
   use array.ArraySwap
@@ -78,39 +82,6 @@ module Enum
     done;
     assert { is_id a };
     { current = a; new = true }
-
-  (* This lemma splits the predicate is_inc_sub to prove the last 
-     postcondition of reverse. *)
-  lemma split_inc_sub: forall a: array int, l m u:int.
-     0 <= l <= m < u <= a.length
-     /\ is_inc_sub a l (m+1) /\ is_inc_sub a m u -> is_inc_sub a l u
-
-  (* reverse function for next *)
-  let reverse (a: array int) (l u: int) : unit
-    requires { 0 <= l < u <= a.length }
-    requires { is_permut a }
-    requires { is_dec_sub a l u }
-    ensures  { is_permut a }
-    ensures  { permut_sub (old a) a l u }
-    ensures  { is_inc_sub a l u }
-  =
-    let ref x = l in
-    let ref y = (u-1) in
-    label L in
-    while x < y do
-      invariant { l <= x < u }
-      invariant { l <= y < u }
-      invariant { is_permut a }
-      invariant { permut_sub (a at L) a l u }
-      invariant { is_inc_sub a l (x+1) }
-      invariant { is_inc_sub a y u }
-      invariant { array_eq_sub (a at L) a x (y+1) }
-      variant   { y }
-      swap a x y;
-      assert { is_permut a }; (* speed up proof *)
-      y := y - 1;
-      x := x + 1
-    done
 
   (* The following lemmas are proved with SMT solvers and used as axioms in Coq: *)
 
@@ -159,12 +130,48 @@ module Enum
     0 <= l < u <= a.length = b.length /\ permut_sub a b l u /\ lt_lex_sub_at a b l u l
     -> exists i:int. l < i < u /\ b[l] = a[i]
 
+  (** Auxiliary lemma to prove inc_permut with Coq *)
+  lemma array_eq_sub_trunc: forall a b: array int, l k u: int.
+    0 <= l -> l <= k -> k < u -> u <= a.length -> a.length = b.length -> array_eq_sub a b l u 
+    -> array_eq_sub a b l k
+
   lemma inc_permut: forall a b: array int, r j:int.
     0 <= r < j < a.length = b.length /\ is_permut a /\ is_dec_sub a (r+1) a.length /\
     is_permut b /\ is_inc_sub b (r+1) a.length /\
     lt_lex_at a b r /\ permut_sub a b r a.length /\
     im_sup1 a r j /\ im_sup2 a r j /\ b[r] = a[j]
     -> inc a b
+  (** Proved with Coq and lemma `array_eq_sub_trunc`. *)
+
+  predicate mirror (a b: array int) (k l u: int) = 
+    forall i. l <= i < k <= u -> a[i] = b[u+l-1-i] /\ b[i] = a[u+l-1-i]
+
+  let reverse (a: array int) (l u: int)
+    requires { 0 <= l < u <= a.length }
+    requires { is_permut_sub a l u }
+    requires { is_dec_sub a l u }
+    requires { is_permut a }
+    ensures  { mirror a (old a) (div (l+u) 2) l u }
+    ensures  { mirror a (old a) u l u }
+    ensures  { is_permut_sub a l u }
+    ensures  { is_inc_sub a l u }
+    ensures  { array_eq_sub a (old a) 0 l }
+    ensures  { array_eq_sub a (old a) u a.length }
+    ensures  { permut_sub (old a) a l u }
+    ensures  { permut_sub (old a) a 0 a.length }
+    ensures  { is_permut a }
+  =
+    let m = div (l+u-1) 2 in
+    for i = l to m do
+      invariant { l <= i <= m+1 }
+      invariant { mirror a (old a) i l u }
+      invariant { array_eq_sub a (old a) i (u+l-i) }
+      invariant { permut (old a) a l u }
+      invariant { array_eq_sub (old a) a 0 l }
+      invariant { array_eq_sub (old a) a u a.length }
+      invariant { permut_sub (old a) a l u }
+      swap a i (u+l-1-i);
+    done
 
   let next (c: cursor) : unit
     requires { sound c }
@@ -198,7 +205,7 @@ module Enum
           j := j - 1
         done;
         swap a r j; (* 3. swap *)
-        reverse a (r+1) n; (* 4. reverse suffix *)
+        let _ = reverse a (r+1) n in (* 4. reverse suffix *)
         assert { lt_lex_at (a at L) a r };
         c.new <- true
 
@@ -212,9 +219,9 @@ module PermutationSound
   use array.ArraySwap
   use ref.Ref
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use arrayExtension.ArrayInjection
-  use Permutation 
+  use Permutation
   use Enum
 
   clone lexgen.SmallCheck with
@@ -284,7 +291,7 @@ module Test
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use Permutation
   use Enum
   use lexgen.Cursor
@@ -295,7 +302,7 @@ module Test
   let run ()
     diverges
   =
-    let n = 3 in
+    let n = 4 in
     let c = create_cursor n in
     let ref l = Nil in
     while c.new do

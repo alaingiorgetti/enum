@@ -1,51 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
 "http://why3.lri.fr/why3session.dtd">
-<why3session shape_version="7">
-<prover id="0" name="Alt-Ergo" version="2.2.0" timelimit="5" steplimit="0" memlimit="1000"/>
-<prover id="1" name="Z3" version="4.7.1" timelimit="5" steplimit="0" memlimit="1000"/>
-<file proved="true">
+<why3session shape_version="6">
+<prover id="0" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="1" name="Alt-Ergo" version="2.4.0" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="2" name="Z3" version="4.7.1" timelimit="5" steplimit="0" memlimit="1000"/>
+<file format="whyml" proved="true">
 <path name=".."/><path name="arrayExtension.mlw"/>
 <theory name="Array" proved="true">
- <goal name="VC copy" expl="VC for copy" proved="true">
- <proof prover="0"><result status="valid" time="0.02" steps="66"/></proof>
+ <goal name="copy&#39;vc" expl="VC for copy" proved="true">
+ <proof prover="0"><result status="valid" time="0.07" steps="5772"/></proof>
  </goal>
 </theory>
 <theory name="ArrayInjection" proved="true">
  <goal name="injective_surjective" proved="true">
- <proof prover="0"><result status="valid" time="0.00" steps="12"/></proof>
+ <proof prover="0" timelimit="5"><result status="valid" time="0.04" steps="6349"/></proof>
  </goal>
  <goal name="injection_occ" proved="true">
- <proof prover="0"><result status="valid" time="0.02" steps="60"/></proof>
+ <proof prover="0"><result status="valid" time="0.06" steps="9190"/></proof>
  </goal>
  <goal name="endoinjection_occ" proved="true">
- <transf name="split_all_full" proved="true" >
+ <transf name="split_vc" proved="true" >
   <goal name="endoinjection_occ.0" proved="true">
-  <proof prover="1"><result status="valid" time="1.33" steps="3723692"/></proof>
+  <proof prover="2"><result status="valid" time="2.42" steps="9982541"/></proof>
   </goal>
  </transf>
  </goal>
- <goal name="VC b_diff" expl="VC for b_diff" proved="true">
- <proof prover="0"><result status="valid" time="0.26" steps="633"/></proof>
+ <goal name="b_diff&#39;vc" expl="VC for b_diff" proved="true">
+ <proof prover="0"><result status="valid" time="0.06" steps="10532"/></proof>
  </goal>
- <goal name="VC b_inj" expl="VC for b_inj" proved="true">
- <proof prover="1"><result status="valid" time="0.07" steps="95285"/></proof>
+ <goal name="b_inj&#39;vc" expl="VC for b_inj" proved="true">
+ <proof prover="2"><result status="valid" time="0.07" steps="95285"/></proof>
  </goal>
- <goal name="VC b_range" expl="VC for b_range" proved="true">
- <proof prover="0"><result status="valid" time="0.97" steps="863"/></proof>
+ <goal name="b_range&#39;vc" expl="VC for b_range" proved="true">
+ <proof prover="0"><result status="valid" time="0.32" steps="40111"/></proof>
+ </goal>
+</theory>
+<theory name="Quant" proved="true">
+ <goal name="for_all_sub&#39;vc" expl="VC for for_all_sub" proved="true">
+ <proof prover="0"><result status="valid" time="0.04" steps="5347"/></proof>
+ </goal>
+ <goal name="for_all&#39;vc" expl="VC for for_all" proved="true">
+ <proof prover="0"><result status="valid" time="0.07" steps="7397"/></proof>
+ </goal>
+ <goal name="for_some_sub&#39;vc" expl="VC for for_some_sub" proved="true">
+ <proof prover="0"><result status="valid" time="0.05" steps="6776"/></proof>
+ </goal>
+ <goal name="for_some&#39;vc" expl="VC for for_some" proved="true">
+ <proof prover="0"><result status="valid" time="0.05" steps="8135"/></proof>
+ </goal>
+ <goal name="mem_sub&#39;vc" expl="VC for mem_sub" proved="true">
+ <proof prover="0"><result status="valid" time="0.04" steps="5497"/></proof>
+ </goal>
+ <goal name="mem&#39;vc" expl="VC for mem" proved="true">
+ <proof prover="0"><result status="valid" time="0.05" steps="5633"/></proof>
  </goal>
 </theory>
 <theory name="ToList" proved="true">
- <goal name="VC to_list_sub" expl="VC for to_list_sub" proved="true">
- <proof prover="0"><result status="valid" time="0.00" steps="8"/></proof>
- </goal>
- <goal name="VC to_list" expl="VC for to_list" proved="true">
- <proof prover="0"><result status="valid" time="0.01" steps="2"/></proof>
+ <goal name="to_list&#39;vc" expl="VC for to_list" proved="true">
+ <proof prover="1"><result status="valid" time="0.00" steps="9"/></proof>
  </goal>
 </theory>
 <theory name="Inc" proved="true">
- <goal name="VC b_inc" expl="VC for b_inc" proved="true">
- <proof prover="0"><result status="valid" time="0.05" steps="157"/></proof>
+ <goal name="b_inc&#39;vc" expl="VC for b_inc" proved="true">
+ <proof prover="0"><result status="valid" time="0.14" steps="14596"/></proof>
  </goal>
 </theory>
 </file>

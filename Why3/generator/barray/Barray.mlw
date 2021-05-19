@@ -1,5 +1,6 @@
 (********************************************************************)
-(* Copyright (C) 2018-19 Alain Giorgetti, C. Erard and R. Lazarini  *)
+(* Copyright (C) 2018-2021 Alain Giorgetti, Clotilde Erard,         *)
+(*                         Rémi Lazarini and Jérome Ricciardi       *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -17,22 +18,18 @@ module Barray
   use arrayExtension.ArrayInjection
   use lex.Lex
 
-  predicate is_barray_sub (a: array int) (l u b: int) = 0 < b /\ range_sub a l u b
+  predicate is_barray_sub (a: array int) (l u b: int) = range_sub a l u b
 
-  predicate is_barray (a: array int) (b: int) = 0 < b /\ is_barray_sub a 0 a.length b
+  predicate is_barray (a: array int) (b: int) = is_barray_sub a 0 a.length b
 
   let function b_barray (a: array int) (b: int) : bool
     ensures { result <-> is_barray a b }
   =
-    if b <= 0 then
-      false
-    else begin
-      for i = 0 to a.length-1 do
-        invariant { is_barray_sub a 0 i b }
-        if not (0 <= a[i] < b) then return false
-      done;
-      true
-    end
+    for i = 0 to a.length-1 do
+      invariant { is_barray_sub a 0 i b }
+      if not (0 <= a[i] < b) then return false
+    done;
+    true
 
 end
 
@@ -64,7 +61,7 @@ module Enum
       { current = a; new = true }
 
   let next (c: cursor) (b: int) : unit
-    requires { b > 0 }
+    writes   { c.current, c.new }
     requires { sound c b }
     ensures  { sound c b }
     ensures  { c.current.length = (old c).current.length }
@@ -74,29 +71,32 @@ module Enum
     ensures  { not c.new -> max_lex (old c.current) b }
     ensures  { not c.new -> max_lex c.current b }
   =
-    let a = c.current in
-    let n = a.length in
-    label L in 
-    let ref r = (n-1) in
-    while r >= 0 && a[r] = b-1 do
-      invariant { -1 <= r <= n-1 }
-      invariant { cte_sub a (r+1) n (b-1) }
-      variant   { r + 1 }
-      r := r - 1
-    done;
-    if (r < 0) then (* Last array reached. *)
+    if b <= 0 then
       c.new <- false
-    else begin
-     a[r] <- a[r] + 1;
-     for i = r+1 to n-1 do
-       invariant { r+1 <= i <= n }
-       invariant { (a at L)[r]+1 = a[r] }
-       invariant { cte_sub a (r+1) i 0 }
-       invariant { lt_lex_at (a at L) a r }
-       a[i] <- 0
-     done;
-     c.new <- true
-     end
+    else
+      let a = c.current in
+      let n = a.length in
+      label L in 
+      let ref r = (n-1) in
+      while r >= 0 && a[r] = b-1 do
+        invariant { -1 <= r <= n-1 }
+        invariant { cte_sub a (r+1) n (b-1) }
+        variant   { r + 1 }
+        r := r - 1
+      done;
+      if (r < 0) then (* Last array reached. *)
+        c.new <- false
+      else begin
+       a[r] <- a[r] + 1;
+       for i = r+1 to n-1 do
+         invariant { r+1 <= i <= n }
+         invariant { (a at L)[r]+1 = a[r] }
+         invariant { cte_sub a (r+1) i 0 }
+         invariant { lt_lex_at (a at L) a r }
+         a[i] <- 0
+       done;
+       c.new <- true
+       end
 
 end
 
@@ -134,11 +134,26 @@ module Test
   use int.Int
   use ref.Ref
   use array.Array
-  use list.List
-  use array.ToList
+  use list.List as L
   use Barray
   use Enum
   use lexgen.Cursor
+
+(* Patch: with
+
+  use array.ToList
+
+  the command 'make run' yields:
+    Type mismatch between list.List.list int and list.List.list 'a
+
+  The generic function to_list is temporarily replaced by the
+  specific one below:
+*)
+
+  let rec function to_list (a: array int) (l u: int) : L.list int
+    requires { l >= 0 /\ u <= a.length }
+    variant  { u - l }
+  = if u <= l then L.Nil else L.Cons a[l] (to_list a (l+1) u)
 
   clone export lexgen.LexIntXX with
     predicate is_XX = is_barray
@@ -149,12 +164,12 @@ module Test
     let n = 3 in
     let k = 4 in
     let c = create_cursor n k in
-    let ref l = Nil in
+    let ref l = L.Nil in
     while c.new do
       invariant { c.new -> sound c k }
       let f = c.current in
-      let g = to_list f 0 f.length in
-      l := Cons g l;
+      let g = to_list f 0 (length f) in
+      l := L.Cons g l;
       next c k
     done;
     l

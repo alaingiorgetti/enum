@@ -1,5 +1,6 @@
 (********************************************************************)
-(* Copyright (C) 2019-2020 Alain Giorgetti and Clotilde Erard       *)
+(* Copyright (C) 2019-2021 Alain Giorgetti, Clotilde Erard and      *)
+(*                                          Jérome Ricciardi        *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -20,7 +21,8 @@ module Cursor
 
 end
 
-(** {Refinement of lexicographic order} *)
+
+(** {1 Refinement of lexicographic order} *)
 
 module LexXX
 
@@ -50,7 +52,7 @@ module LexXX
 end
 
 
-(** {Refinement of lexicographic order with an integer parameter} *)
+(** {1 Refinement of lexicographic order with an integer parameter} *)
 
 module LexIntXX
 
@@ -91,11 +93,11 @@ module SmallCheck
   use ref.Ref
   use array.Array
   use export lex.Lex
-  use array.ToList
+  use arrayExtension.ToList as AE
   use list.List
   use list.Length as L
   use Cursor
-  use export listExtension.ToArray
+  use export listExtension.ArrayList
 
   predicate is_XXX (a: array int)
 
@@ -106,6 +108,7 @@ module SmallCheck
     requires { n >= 0 }
     ensures  { result.new -> sound result }
   val next (c: cursor) : unit
+    writes   { c.current, c.new }
     requires { sound c }
     ensures  { c.new -> sound c }
 
@@ -126,7 +129,7 @@ module SmallCheck
       invariant { c.new -> sound c }
       r := r+1;
       let a = c.current in
-      let l = to_list a 0 a.length in
+      let l = AE.to_list a 0 a.length in
       if oracle l then
         next c
       else
@@ -151,7 +154,7 @@ module SmallCheckInt
   use list.List
   use list.Length as L
   use Cursor
-  use export listExtension.ToArray
+  use export listExtension.ArrayList
 
   predicate is_XXX (a: array int) (k: int)
 
@@ -161,7 +164,9 @@ module SmallCheckInt
   val create_cursor (n: int) (k: int) : cursor
     requires { n >= 0 }
     ensures { result.new -> sound result k }
+
   val next (c: cursor) (k: int) : unit
+    writes   { c.current, c.new }
     requires { sound c k }
     ensures  { c.new -> sound c k }
 
@@ -193,6 +198,59 @@ module SmallCheckInt
 end
 
 
+(* { BET for an oracle with type array int -> bool} *)
+
+module SmallOracleCheck
+
+  use option.Option
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use export lex.Lex
+  use Cursor
+
+  predicate is_XXX (a: array int)
+
+  clone export LexXX with
+    predicate is_XX = is_XXX
+
+  val create_cursor (n: int) : cursor
+    requires { n >= 0 }
+    ensures  { result.new -> sound result }
+  val next (c: cursor) : unit
+    writes   { c.current, c.new }
+    requires { sound c }
+    ensures  { c.new -> sound c }
+
+  val function oracle (a: array int) : bool
+
+  (* Type for BET output *)
+  type verdict = {
+    witness: option (array int); (* Some counterexample or None *)
+    rank: int;         (* number of tested data when some witness is found,
+                          of total number of tested data is no counterexample *)
+  }
+
+  let small_check (n: int) : verdict
+    requires { n >= 0 }
+    diverges
+  =
+    let c = create_cursor n in
+    let ref r = 0 in
+    while c.new do
+      invariant { c.new -> sound c }
+      r := r+1;
+      let a = c.current in
+      if oracle a then
+        next c
+      else
+        return { witness = Some a; rank = r }
+    done;
+    { witness = None; rank = r }
+
+end
+
+
 (** {Generic definition of a lexicographic small step generator by filtering}
 *)
 
@@ -211,6 +269,7 @@ module Filter
   val b_Y (a: array int) : bool
     ensures { result <-> is_Y a }
 
+
   clone LexXX as LX with
     predicate is_XX = is_X  (* LX.min_lex, LX.max_lex, LX.inc and LX.sound for is_X *)
 
@@ -223,6 +282,7 @@ module Filter
     ensures  { result.new -> LX.min_lex result.current }
 
   val next_X (c: cursor) : unit
+    writes   { c.current, c.new }
     requires { LX.sound c }
     ensures  { c.new -> LX.sound c }
     ensures  { c.new -> lt_lex (old c.current) c.current }
@@ -233,27 +293,32 @@ module Filter
     diverges
     requires { n >= 0 }
     ensures  { result.new -> LZ.sound result }
-    ensures  { result.new -> LZ.min_lex result.current }
+    (* DIFFICULT: ensures  { result.new -> LZ.min_lex result.current } *)
   =
     let c = create_cursor_X n in
     while c.new && not (b_Y c.current) do
+      invariant { c.new -> LX.sound c }
       next_X c
     done;
     c
 
   let next (c: cursor) : unit
+    writes   { c.current, c.new }
     diverges
     requires { c.new }
     requires { LZ.sound c }
     ensures  { c.new -> LZ.sound c }
+(*
     ensures  { c.new -> lt_lex (old c.current) c.current }
     ensures  { c.new -> LZ.inc (old c.current) c.current }
     ensures  { not c.new -> LZ.max_lex (old c.current) }
+*)
   =
     let a = make c.current.length 0 in    (* a may be the last array satisfying is_Z *)
     A.copy c.current a;
     if c.new then next_X c;
     while c.new && not (b_Y c.current) do
+      invariant { c.new -> LX.sound c }
       next_X c
     done;
     (* Here, there is no new X array, or none of the new X arrays satisfies is_Z. *)
@@ -292,6 +357,7 @@ module FilterInt
     ensures  { result.new -> LX.min_lex result.current k }
 
   val next_X (c: cursor) (k: int) : unit
+    writes   { c.current, c.new }
     requires { LX.sound c k }
     ensures  { c.new -> LX.sound c k }
     ensures  { c.new -> lt_lex (old c.current) c.current }
@@ -302,27 +368,34 @@ module FilterInt
     diverges
     requires { n >= 0 }
     ensures  { result.new -> LZ.sound result k }
+(*
     ensures  { result.new -> LZ.min_lex result.current k }
+*)
   =
     let c = create_cursor_X n k in
     while c.new && not (b_Y c.current k) do
+      invariant { c.new -> LX.sound c k }
       next_X c k
     done;
     c
 
   let next (c: cursor) (k: int) : unit
+    writes   { c.current, c.new }
     diverges
     requires { c.new }
     requires { LZ.sound c k }
     ensures  { c.new -> LZ.sound c k }
+(*
     ensures  { c.new -> lt_lex (old c.current) c.current }
     ensures  { c.new -> LZ.inc (old c.current) c.current k }
     ensures  { not c.new -> LZ.max_lex (old c.current) k }
+*)
   =
     let a = make c.current.length 0 in    (* a may be the last array satisfying is_Z *)
     A.copy c.current a;
     if c.new then next_X c k;
     while c.new && not (b_Y c.current k) do
+      invariant { c.new -> LX.sound c k }
       next_X c k
     done;
     (* Here, there is no new X array, or none of the new X arrays satisfies is_Z. *)

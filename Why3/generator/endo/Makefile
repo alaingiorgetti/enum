@@ -1,6 +1,7 @@
 ######################################################################
-# Copyright (C) 2019 Alain Giorgetti and Clotilde Erard              #
-# FEMTO-ST institute                                                 #
+#  Copyright (C) 2019-2021 Alain Giorgetti, Clotile Erard and        #
+#                                           Jérome Ricciardi         #
+#  FEMTO-ST institute                                                #
 ######################################################################
 
 ######################################################################
@@ -13,18 +14,16 @@
 # Used file path list
 DIRS?= -L .. -L ../..
 
-.PHONY: test run ide prove extract clean
-
-test:
-	@echo "WARNING: Works only with the provided Dockerfile\n"
-	@echo "1. Boolean function b_endo is sound?"
-	@bash ../../bet.sh "$(DIRS)" Endo.mlw Endo__EndoSound.test_b_endo
+.PHONY: run ide prove extract clean
 
 run:
-	why3 execute $(DIRS) Endo.mlw Test.run
+	why3 execute $(DIRS) Endo.mlw --use=Test 'run ()'
 
 ide:
 	why3 ide $(DIRS) Endo.mlw
+
+replay:
+	why3 replay $(DIRS) Endo
 
 prove:
 	why3 prove -P alt-ergo $(DIRS) Endo.mlw

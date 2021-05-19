@@ -138,7 +138,7 @@ module FilterDemo
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use FactEndo
   use lexgen.Cursor
 
@@ -167,7 +167,7 @@ module Test
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use Fact
   use Enum
   use lexgen.Cursor

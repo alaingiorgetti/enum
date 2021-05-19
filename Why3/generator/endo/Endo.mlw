@@ -1,5 +1,5 @@
 (********************************************************************)
-(* Copyright (C) 2019 Alain Giorgetti and Clotilde Erard            *)
+(* Copyright (C) 2019-2020 Alain Giorgetti and Clotilde Erard       *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -17,16 +17,34 @@ module Endo
     l <= i < u -> 0 <= a[i] < a.length
 
   predicate is_endo (a:array int) = is_endo_sub a 0 a.length
-  
+
   let function b_endo (a: array int) : bool
-   ensures { result <-> is_endo a }
+    ensures { result <-> is_endo a }
   =
     let n = a.length in
-    for i = 0 to n - 1 do
+    for i = 0 to n-1 do
       invariant { is_endo_sub a 0 i }
-      if not (0 <= a[i] < a.length) then return false
+      if not (0 <= a[i] < n) then return false
     done;
     true
+
+  lemma b_is_endo_sound: forall a: array int. is_endo a -> b_endo a = true
+
+  (* Wrong mutation of b_endo: *)
+  let function b_endo_wrong (a: array int) : bool
+    ensures { result <-> is_endo a }
+  =
+    let n = a.length in
+    for i = 0 to n-1 do
+      invariant { is_endo_sub a 0 i }
+      if not (0 <= a[i] < n-1) then return false;
+    done;
+    true
+
+   (* Wrong lemma, however proved as a consequence of the wrong postcondition
+      of b_endo_wrong. *)
+  lemma b_endo_wrong_sound:
+    forall a: array int. is_endo a -> b_endo_wrong a = true
 
 end
 
@@ -45,13 +63,17 @@ module Enum
     predicate is_XX = is_endo
 
   let create_cursor (n: int) : cursor
-    requires { n >= 0 }
-    ensures  { sound result }
-    ensures  { min_lex result.current }
-    ensures  { length result.current = n }
-  = 
-    let a = make n 0 in
-    { current = a; new = true }
+    ensures  { result.new = True <-> n >= 0 }
+    ensures  { result.new = True <-> exists a : array int. length a = n /\ is_endo a }
+    ensures  { result.new -> sound result }
+    ensures  { result.new -> min_lex result.current }
+    ensures  { result.new -> length result.current = n }
+  =
+    if n < 0 then
+      { current = make 0 0; new = False }
+    else
+      let a = make n 0 in
+      { current = a; new = True }
 
   let next (c: cursor) : unit
     requires { sound c }
@@ -73,7 +95,7 @@ module Enum
       r := r - 1
     done;
     if (r < 0) then (* Last array reached. *)
-      c.new <- false
+      c.new <- False
     else begin
       a[r] <- a[r] + 1;
       for i = r+1 to n-1 do
@@ -83,18 +105,19 @@ module Enum
         invariant { lt_lex_at (a at L) a r }
         a[i] <- 0
       done;
-      c.new <- true
+      c.new <- True
     end
 
 end
 
 
+(* Examples of enumerative checking with an oracle on an list of integers *)
 module EndoSound
 
   use int.Int
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use Endo
   use Enum
 
@@ -103,14 +126,67 @@ module EndoSound
     val create_cursor = create_cursor,
     val next = next
 
-  lemma b_is_endo_sound: forall a: array int. is_endo a -> b_endo a = true
-
-  (* Bounded-exhaustive test of the lemma before proving it: *)
+  (* Bounded-exhaustive testing of the lemma b_is_endo_sound: *)
   let test_b_endo () : verdict
     diverges
   =
     let n = 5 in
     small_check (fun l -> b_endo (to_array l)) n
+
+  let test_b_endo_wrong () : verdict
+    diverges
+  =
+    let n = 4 in
+    small_check (fun l -> b_endo_wrong (to_array l)) n
+
+end
+
+
+(* Example of enumerative check with an oracle on an array of integers.
+   In ENUM >= 1.3. *)
+module EndoSoundSmallOracleCheck
+
+  use int.Int
+  use array.Array
+  use Endo
+  use Enum
+
+  (* Enumerative testing with b_endo oracle *)
+  clone lexgen.SmallOracleCheck with
+    predicate is_XXX = is_endo,
+    val create_cursor = create_cursor,
+    val next = next,
+    val oracle = b_endo
+
+  (* Bounded-exhaustive test of the lemma b_is_endo_sound: *)
+  let test_b_endo () : verdict
+    diverges
+  =
+    let n = 5 in small_check n
+
+end
+
+
+(* Example of enumerative check with an oracle on an array of integers.
+   In ENUM >= 1.3. *)
+module EndoSoundWrongSmallOracleCheck
+
+  use int.Int
+  use array.Array
+  use Endo
+  use Enum
+
+  (* Enumerative testing with b_endo oracle *)
+  clone lexgen.SmallOracleCheck with
+    predicate is_XXX = is_endo,
+    val create_cursor = create_cursor,
+    val next = next,
+    val oracle = b_endo_wrong
+
+  let test_b_endo_wrong () : verdict
+    diverges
+  =
+    let n = 6 in small_check n
 
 end
 
@@ -121,7 +197,7 @@ module Test
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use Endo
   use Enum
   use lexgen.Cursor

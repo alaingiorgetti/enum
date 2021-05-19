@@ -1,5 +1,6 @@
 ######################################################################
-# Copyright 2018-19 Alain Giorgetti, C. Erard and R. Lazarini        #
+# Copyright (C) 2018-2021 Alain Giorgetti, Clotilde Erard,           #
+#                         Rémi Lazarini and Jérome Ricciardi         #
 # FEMTO-ST institute                                                 #
 ######################################################################
 
@@ -12,22 +13,21 @@
 
 DIRS?= -L .. -L ../..
 
-.PHONY: test run ide prove extract clean
-
-test:
-	@echo "1. Boolean function b_barray is sound?"
-	@bash ../../bet.sh "$(DIRS)" Barray.mlw Barray__BarraySound.test_b_barray
+.PHONY: run ide replay prove extract clean
 
 run:
-	why3 execute $(DIRS) Barray.mlw Test.run
+	why3 execute $(DIRS) Barray.mlw --use=Test 'run ()'
 
 ide:
 	why3 ide $(DIRS) Barray.mlw
 
+replay:
+	why3 replay $(DIRS) Barray
+
 prove:
 	why3 prove -P alt-ergo -P cvc4 -P z3 -a split_all_full $(DIRS) Barray.mlw
 
-# Extract WhyML code to OCaml. Folder /enum/OCaml/barray is assumed to exist.
+# Extract WhyML code to OCaml. Folder /enum/OCaml/generator/barray is assumed to exist.
 extract:
 	why3 extract --modular --recursive -D ocaml64 $(DIRS) -o ../../../OCaml/generator/barray Barray.mlw
 

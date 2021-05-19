@@ -13,18 +13,10 @@
 # Used file path list
 DIRS?= -L .. -L ../..
 
-.PHONY: test run ide replay extract clean
-
-test:
-	@echo "1. Boolean function b_permut is sound?"
-	@bash ../../bet.sh "$(DIRS)" Permutation.mlw Permutation__PermutationSound.test_b_permut
-	@echo "2. The reverse of a permutation is a permutation?"
-	@bash ../../bet.sh "$(DIRS)" Permutation.mlw Permutation__PermutationSound.test
-	@echo "3. Boolean function b_range_wrong is sound?"
-	@bash ../../bet.sh "$(DIRS)" Permutation.mlw Permutation__PermutationSound.test1
+.PHONY: run ide replay extract clean
 
 run:
-	why3 execute $(DIRS) Permutation.mlw Test.run
+	why3 execute $(DIRS) Permutation.mlw --use=Test 'run ()'
 
 ide:
 	why3 ide $(DIRS) Permutation.mlw
@@ -37,4 +29,4 @@ extract:
 	why3 extract --modular --recursive -D ocaml64 $(DIRS) -o ../../../OCaml/generator/permutation Permutation.mlw
 
 clean:
-	rm -f *.bak; rm -rf OCaml; cd Permutation; rm -f *.bak
+	rm -f *.bak; rm -rf OCaml; rm -f Permutation/*.bak

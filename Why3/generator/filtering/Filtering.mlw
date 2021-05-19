@@ -69,7 +69,7 @@ module FilterDemoInj
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use InjBarray
   use lexgen.Cursor
 
@@ -136,7 +136,7 @@ module FilterDemoComb
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use CombBarray
   use lexgen.Cursor
 

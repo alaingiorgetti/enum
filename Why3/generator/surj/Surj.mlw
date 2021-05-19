@@ -14,51 +14,37 @@ module Surj
   use array.Array
   use Barray.Barray
 
-  predicate is_eq_im_sub (a: array int) (j u: int) =
-    exists i:int. 0 <= i < u /\ a[j] = a[i]
+  predicate pre_img_sub (a: array int) (u j: int) =
+    exists i:int. 0 <= i < u /\ a[i] = j
 
-  predicate is_eq_im (a: array int) (j: int) = (* is_eq_im_sub a j a.length *)
-    exists i:int. 0 <= i < a.length /\ a[j] = a[i]
+  predicate pre_img (a: array int) (j: int) = (* pre_img_sub a a.length j *)
+    exists i:int. 0 <= i < a.length /\ a[i] = j
 
-  let function b_eq_im (a: array int) (j: int): bool
-    requires { 0 <= j < a.length }
-    ensures { result <-> is_eq_im a j }
+  let function b_pre_img (a: array int) (j: int): bool
+    ensures { result <-> pre_img a j }
   =
-    let n = a.length in
-    for i = 0 to n-1 do
-      invariant { not (is_eq_im_sub a j i) }
-      if a[j] = a[i] then return true
+    for i = 0 to a.length-1 do
+      invariant { not (pre_img_sub a i j) }
+      if a[i] = j then return true
     done;
     false
 
-  predicate is_im_sub (a: array int) (k u: int) = 
-    k <= a.length /\
-    forall i:int. 0 <= i <= u < k -> is_eq_im a i
+  predicate init_pre_img (a: array int) (k: int) =
+    forall j:int. 0 <= j < k -> pre_img a j
 
-  predicate is_im (a: array int) (k: int) =  (* is_im_sub a k (k-1) *)
-    k <= a.length /\
-    forall i:int. 0 <= i < k -> is_eq_im a i
-
-  let function b_im (a: array int) (k: int): bool
-    ensures { result <-> is_im a k }
+  let function b_init_pre_img (a: array int) (k: int): bool
+    ensures { result <-> init_pre_img a k }
   =
-    if k > a.length then
-      false
-    else begin
-      for i = 0 to k-1 do
-        invariant { is_im_sub a k i }
-        if not (b_eq_im a i) then return false
-      done;
-      true
-    end
+    for j = 0 to k-1 do
+      invariant { init_pre_img a j }
+      if not (b_pre_img a j) then return false
+    done;
+    true
 
+(* For free in SurjBarray:
   predicate is_surj (a: array int) (k: int) = 
-    is_barray a k /\ is_im a k
-
-  let function b_surj (a: array int) (k: int): bool
-    ensures { result <-> is_surj a k }
-  = 
-    b_barray a k && b_im a k
+    is_barray a k /\ init_pre_img a k
+*)
 
 end
 
@@ -71,8 +57,8 @@ module SurjBarray
 
   clone export lexgen.FilterInt with
     predicate is_X = is_barray,
-    predicate is_Y = is_surj,
-    val b_Y = b_surj,
+    predicate is_Y = init_pre_img,
+    val b_Y = b_init_pre_img,
     val create_cursor_X = E.create_cursor,
     val next_X = E.next
 
@@ -85,7 +71,7 @@ module FilterDemo
   use ref.Ref
   use array.Array
   use list.List
-  use array.ToList
+  use arrayExtension.ToList
   use SurjBarray
   use lexgen.Cursor
 

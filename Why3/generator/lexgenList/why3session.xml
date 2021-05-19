@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="6">
+<prover id="0" name="Alt-Ergo" version="2.4.0" timelimit="20" steplimit="0" memlimit="2000"/>
+<prover id="2" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="whyml" proved="true">
+<path name=".."/><path name="lexgenList.mlw"/>
+<theory name="SmallCheckInt" proved="true">
+ <goal name="small_check_int&#39;vc" expl="VC for small_check_int" proved="true">
+ <proof prover="0"><result status="valid" time="0.00" steps="8"/></proof>
+ <proof prover="2" obsolete="true"><result status="valid" time="0.07" steps="7226"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>

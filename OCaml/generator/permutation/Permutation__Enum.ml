@@ -8,13 +8,14 @@ let create_cursor (n: Z.t) : Lexgen__Cursor.cursor =
   { Lexgen__Cursor.current = a; Lexgen__Cursor.new1 = true }
 
 let reverse (a: (Z.t) array) (l: Z.t) (u: Z.t) : unit =
-  let x = ref l in
-  let y = ref (Z.sub u Z.one) in
-  while Z.lt (!x) (!y) do
-    Array__ArraySwap.swap a (!x) (!y);
-    y := Z.sub (!y) Z.one;
-    x := Z.add (!x) Z.one
-  done
+  let m = Z.ediv (Z.sub (Z.add l u) Z.one) (Z.of_string "2") in
+  let rec for_loop_to7 i2 =
+    if Z.leq i2 m
+    then begin
+      Array__ArraySwap.swap a i2 (Z.sub (Z.sub (Z.add u l) Z.one) i2);
+      for_loop_to7 (Z.succ i2)
+    end
+  in for_loop_to7 l
 
 let next (c: Lexgen__Cursor.cursor) : unit =
   let a = c.Lexgen__Cursor.current in
@@ -24,19 +25,19 @@ let next (c: Lexgen__Cursor.cursor) : unit =
   else
     begin
       let r4 = ref (Z.sub n (Z.of_string "2")) in
-      while Z.geq (!r4) Z.zero && Z.gt (a.(Z.to_int (!r4))) (a.(Z.to_int 
-                                                             (Z.add (!r4) Z.one))) do
-        r4 := Z.sub (!r4) Z.one
+      while Z.geq !r4 Z.zero && Z.gt a.(Z.to_int !r4)
+                                a.(Z.to_int (Z.add !r4 Z.one)) do
+        r4 := Z.sub !r4 Z.one
       done;
-      if Z.lt (!r4) Z.zero
+      if Z.lt !r4 Z.zero
       then c.Lexgen__Cursor.new1 <- false
       else
         begin
           let j3 = ref (Z.sub n Z.one) in
-          while Z.gt (a.(Z.to_int (!r4))) (a.(Z.to_int (!j3))) do
-            j3 := Z.sub (!j3) Z.one
+          while Z.gt a.(Z.to_int !r4) a.(Z.to_int !j3) do
+            j3 := Z.sub !j3 Z.one
           done;
-          Array__ArraySwap.swap a (!r4) (!j3);
-          reverse a (Z.add (!r4) Z.one) n;
+          Array__ArraySwap.swap a !r4 !j3;
+          reverse a (Z.add !r4 Z.one) n;
           c.Lexgen__Cursor.new1 <- true end end
 

@@ -8,7 +8,7 @@ let b_diff (a: (Z.t) array) (i: Z.t) : bool =
      let rec for_loop_to2 j =
        if Z.leq j o
        then begin
-         if Z.equal (a.(Z.to_int j)) (a.(Z.to_int i)) && not (Z.equal j i)
+         if Z.equal a.(Z.to_int j) a.(Z.to_int i) && not (Z.equal j i)
          then raise (QtReturn false);
          for_loop_to2 (Z.succ j)
        end
@@ -41,7 +41,7 @@ let b_range (a: (Z.t) array) : bool =
      let rec for_loop_to4 j2 =
        if Z.leq j2 o
        then begin
-         if not (in_interval (a.(Z.to_int j2)) Z.zero n)
+         if not (in_interval a.(Z.to_int j2) Z.zero n)
          then raise (QtReturn2 false);
          for_loop_to4 (Z.succ j2)
        end

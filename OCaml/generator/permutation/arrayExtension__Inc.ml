@@ -6,7 +6,7 @@ let b_inc (a: (Z.t) array) : bool =
      let rec for_loop_to5 i =
        if Z.leq i o
        then begin
-         if not (Z.lt (a.(Z.to_int (Z.sub i Z.one))) (a.(Z.to_int i)))
+         if not (Z.lt a.(Z.to_int (Z.sub i Z.one)) a.(Z.to_int i))
          then raise (QtReturn3 false);
          for_loop_to5 (Z.succ i)
        end

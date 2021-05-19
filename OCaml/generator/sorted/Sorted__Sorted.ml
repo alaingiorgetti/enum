@@ -6,7 +6,7 @@ let b_inc1 (a: (Z.t) array) : bool =
      let rec for_loop_to6 i1 =
        if Z.leq i1 o
        then begin
-         if not (Z.leq (a.(Z.to_int (Z.sub i1 Z.one))) (a.(Z.to_int i1)))
+         if not (Z.leq a.(Z.to_int (Z.sub i1 Z.one)) a.(Z.to_int i1))
          then raise (QtReturn4 false);
          for_loop_to6 (Z.succ i1)
        end

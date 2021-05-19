@@ -9,7 +9,7 @@ let self_blit : type a. (a array) -> (Z.t) -> (Z.t) -> (Z.t) ->  unit =
                              if Z.geq k o
                              then begin
                                a.(Z.to_int (Z.add ofs2 k)) <- a.(Z.to_int 
-                                                              (Z.add ofs1 k));
+                               (Z.add ofs1 k));
                                for_loop_to (Z.pred k)
                              end
                            in for_loop_to o1
@@ -20,7 +20,7 @@ let self_blit : type a. (a array) -> (Z.t) -> (Z.t) -> (Z.t) ->  unit =
                                if Z.leq k1 o
                                then begin
                                  a.(Z.to_int (Z.add ofs2 k1)) <- a.(Z.to_int 
-                                                                 (Z.add ofs1 k1));
+                                 (Z.add ofs1 k1));
                                  for_loop_to1 (Z.succ k1)
                                end
                              in for_loop_to1 o1 end

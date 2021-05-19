@@ -1,0 +1,157 @@
+(********************************************************************)
+(* Copyright (C) 2021 Alain Giorgetti and Jérome Ricciardi          *)
+(* FEMTO-ST institute                                               *)
+(********************************************************************)
+
+(********************************************************************)
+(*  This software is distributed under the terms of the GNU Lesser  *)
+(*  General Public License version 2.1                              *)
+(********************************************************************)
+
+(* A blist is an list of integers with values in [0..b-1] for some bound b. *)
+
+module Blist
+
+  use int.Int
+  use list.List
+  use list.Length
+  use list.Nth
+  use option.Option
+  use bool.Bool
+  use listExtension.ListExtension
+  
+  let rec predicate is_blist (l: list int) (b: int) : bool
+  =
+    match l with
+    | Nil -> true
+    | Cons x r -> 0 <= x < b && is_blist r b
+    end
+
+end
+
+
+(** {Enumeration of blist} *)
+
+module Enum
+
+  use int.Int
+  use ref.Ref
+  use list.List
+  use list.Length
+  use list.NthNoOpt
+  use option.Option
+  use bool.Bool
+  use listExtension.ListExtension
+  use listExtension.ListEq
+  use listExtension.Cte
+  use Blist
+  use lexgenList.Cursor
+
+  clone export lexgenList.LexIntXX with
+    predicate is_XX = is_blist
+
+  let create_cursor (n b: int) : cursor
+    requires { n >= 0 }
+    ensures  { result.new -> sound result b }
+    ensures  { length result.current = n }
+  =
+    let l = make n 0 in
+    if b < 0 
+    then { current = l; new = false }
+    else   
+      if is_blist l b
+        then { current = l; new = true }
+        else { current = l; new = false }   
+
+  let rec next_blist_rec (l: list int) (b: int) : option (list int)
+    variant  { length l }
+    requires { is_blist l b }
+    ensures  { match result with None -> true | Some l -> is_blist l b end }    
+    ensures  { match result with None -> true | Some r -> lt_lex l r end }
+   =
+     match l with
+     | Nil -> None
+     | Cons x r ->
+        if x < b-1 then
+          Some (Cons (x+1) r)
+        else
+          match next_blist_rec r b with
+          | None -> None
+          | Some m -> Some (Cons x m)
+          end
+     end
+
+  let next (c: cursor) (b: int) : unit
+     writes   { c.current, c.new }
+     requires { sound c b }
+     ensures  { sound c b }
+     ensures  { c.current.length = (old c).current.length }
+     ensures  { c.new -> lt_lex (old c.current) c.current }
+   =
+     if b < 0 
+       then c.new <- false
+       else
+     match next_blist_rec c.current b with
+     | None -> c.new <- false
+     | Some l ->
+         c.current <- l;
+         c.new <- true
+     end
+
+end
+
+
+module BlistSound
+
+  use int.Int
+  use list.List
+  use Blist
+  use Enum
+
+  clone lexgenList.SmallCheckInt with
+    predicate is_XXX = is_blist,
+    val create_cursor = create_cursor,
+    val next = next
+
+  let test_b_blist () : verdict
+    diverges
+  =
+    let n = 5 in
+    let k = 3 in
+    small_check_int (fun l k -> is_blist l k) n k
+
+end
+
+
+module Test
+
+  use int.Int
+  use ref.Ref
+  use list.Length
+  use list.List
+  use Blist
+  use Enum
+  use lexgenList.Cursor
+
+  clone export lexgenList.LexIntXX with
+    predicate is_XX = is_blist
+
+  let run ()
+    diverges
+  =
+    let n = 3 in
+    let b = 4 in
+    let c = create_cursor n b in
+    let ref l = Nil in
+    while c.new do
+      invariant { b > 0 }
+      invariant { n >= 0 }
+      invariant  { length c.current = n }
+      invariant { c.new -> sound c b }
+      let f = c.current in
+      l := Cons f l;
+      next c b
+    done;
+    l
+
+end

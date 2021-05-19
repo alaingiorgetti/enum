@@ -1,11 +1,12 @@
-Copyright (C) 2014-2019 Clotilde Erard, Richard Genestier, Alain Giorgetti and Rémi Lazarini
+Copyright (C) 2014-2021 Clotilde Erard, Richard Genestier, Alain Giorgetti,
+Rémi Lazarini and Jérome Ricciardi.
 
-ENUM is a library of structured array generators.
+ENUM is a library of structured array and list generators.
 
 The version in C is formally specified in ACSL and automatically verified with 
 the WP plugin of the Frama-C platform. The version in WhyML is verified with Why3.
 
-Authors: Clotilde Erard, Richard Genestier, Alain Giorgetti and Rémi Lazarini
+Authors: Clotilde Erard, Richard Genestier, Alain Giorgetti, Rémi Lazarini and Jérome Ricciardi.
 
 FEMTO-ST institute (UMR CNRS 6174)
 
@@ -16,7 +17,6 @@ Documentation
 
 The project is documented by the present file and in [EG19].
 
-
 Folders
 =======
 
@@ -25,7 +25,7 @@ cACSL
 
   C generators, specified in ACSL for verification with the WP plugin of 
   the Frama-C platform. Significant subset of ENUM 1.0 (downloadable at 
-  http://members.femto-st.fr/alain-giorgetti/en). Documented in cACSL/README.md.
+  [http://members.femto-st.fr/alain-giorgetti/en](http://members.femto-st.fr/alain-giorgetti/en)). Documented in cACSL/README.md.
 
 cWhy3
 -----
@@ -35,7 +35,7 @@ cWhy3
 docs
 ----
 
-  Documentation
+  Documentation.
 
 OCaml
 -----
@@ -51,57 +51,63 @@ ptrWhy3
 Why3
 ----
 
-  WhyML generators extractable in OCaml, but not in C. Extension of ENUM 1.1.
+  WhyML generators extractable in OCaml, but not in C.
 
 Project home
 ============
 
-https://github.com/alaingiorgetti/enum
+[https://github.com/alaingiorgetti/enum](https://github.com/alaingiorgetti/enum)
 
 Copyright
 =========
 
 This program is distributed under the GNU LGPL 3. See the enclosed file LICENSE.
 
+Installation
+============
+
+See INSTALL.md.
+
 How to use this code?
 =====================
 
-See the file Makefile for the different possible actions (compilation, 
-proof, etc). See also the files Makefile in subfolders.
+See the file Makefile for the different possible actions (compilation, proof,
+ etc). See also the files Makefile in subfolders.
 
 References
 ==========
+
+[DGG16] C. Dubois, A. Giorgetti, and R. Genestier. Tests and proofs
+for enumerative combinatorics.  In Tests and Proofs (TAP'16), volume 6792 of LNCS, 
+pages 57–75. Springer, 2016. [http://dx.doi.org/10.1007/978-3-319-41135-4_4](http://dx.doi.org/10.1007/978-3-319-41135-4_4).
 
 [EG19] C. Erard and A. Giorgetti. Bounded Exhaustive Testing with Certified
 and Optimized Data Enumeration Programs. In ICTSS’19, 31st IFIP Int. Conf.
 on Testing Software and Systems, volume 11812 of Lecture Notes in Computer
 Science, pages 159–175, Paris, France, 2019. Springer, Cham.
+File [EG19.pdf](https://github.com/alaingiorgetti/enum/blob/master/docs/EG19.pdf).
 
 [fxtbook] J. Arndt. Matters Computational - Ideas, Algorithms, Source Code 
- Published electronically at http://www.jjj.de, 2010.
-
-[GGP15a] R. Genestier, A. Giorgetti, and G. Petiot. Gagnez sur tous les 
-tableaux. In Vingt-sixièmes Journées Francophones des Langages Applicatifs 
-(JFLA'15), Le Val d'Ajol, France, January 2015. https://hal.inria.fr/hal-01099135.
-
-[GGP15b] R. Genestier, A. Giorgetti, and G. Petiot. Sequential generation 
-of structured arrays and its deductive verification. In Tests and Proofs (TAP'15), 
-volume 9154 of LNCS, pages 109–128. Springer, Heidelberg, 2015.
-http://dx.doi.org/10.1007/978-3-319-21215-9_7.
+ Published electronically at [http://www.jjj.de](http://www.jjj.de), 2010.
 
 [Genestier16] R. Genestier. Vérification formelle de programmes de génération 
 de données structurées. In Approches Formelles dans l'Assistance au
 Développement Logiciel (AFADL'16), pages 67–71, 2016. 
 http://events.femto-st.fr/sites/femto-st.fr.gdr-gpl-2016/files/content/AFADL-2016.pdf.
 
+[GGP15a] R. Genestier, A. Giorgetti, and G. Petiot. Gagnez sur tous les 
+tableaux. In Vingt-sixièmes Journées Francophones des Langages Applicatifs 
+(JFLA'15), Le Val d'Ajol, France, January 2015. [https://hal.inria.fr/hal-01099135](https://hal.inria.fr/hal-01099135).
+
+[GGP15b] R. Genestier, A. Giorgetti, and G. Petiot. Sequential generation 
+of structured arrays and its deductive verification. In Tests and Proofs (TAP'15), 
+volume 9154 of LNCS, pages 109–128. Springer, Heidelberg, 2015.
+[http://dx.doi.org/10.1007/978-3-319-21215-9_7](http://dx.doi.org/10.1007/978-3-319-21215-9_7).
+
 [GG16] R. Genestier, and A. Giorgetti. Spécification et vérification 
 formelle d'opérations sur les permutations. In Approches Formelles dans 
 l'Assistance au Développement Logiciel (AFADL'16), pages 72–78, 2016.
 http://events.femto-st.fr/sites/femto-st.fr.gdr-gpl-2016/files/content/AFADL-2016.pdf.
-
-[DGG16] C. Dubois, A. Giorgetti, and R. Genestier. Tests and proofs
-for enumerative combinatorics.  In Tests and Proofs (TAP'16), volume 6792 of LNCS, 
-pages 57–75. Springer, 2016. http://dx.doi.org/10.1007/978-3-319-41135-4_4.
 
 [GL18] A. Giorgetti and R. Lazarini. Preuve de programmes d’énumération avec Why3.
 In AFADL’18, pages 14–19, 2018.

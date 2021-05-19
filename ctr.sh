@@ -5,7 +5,8 @@
 # Get the working directory:
 _pwd="$(pwd)"
 
-docker create -ti -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
+docker create -ti -e DISPLAY=$DISPLAY \
+ -v /tmp/.X11-unix:/tmp/.X11-unix \
  -v ${_pwd}/cACSL:/home/opam/enum/cACSL \
  -v ${_pwd}/cWhy3:/home/opam/enum/cWhy3 \
  -v ${_pwd}/OCaml:/home/opam/enum/OCaml \

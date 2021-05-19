@@ -1,5 +1,5 @@
 ######################################################################
-# Copyright (C) 2019 Clotilde Erard and Alain Giorgetti              #
+# Copyright (C) 2019-2021 Clotilde Erard and Alain Giorgetti         #
 # FEMTO-ST institute                                                 #
 ######################################################################
 
@@ -24,12 +24,13 @@ prove:
 	why3 prove -P z3 lex.mlw
 	why3 prove $(DIRS) -P alt-ergo lexgen.mlw
 	cd barray; make prove
-	cd fact; make prove
-	cd rgf; make prove	
-	cd sorted; make prove
 
 replay:
+	why3 replay lex
+	why3 replay $(DIRS) lexgen
+	why3 replay $(DIRS) arrayExtension
 	cd permutation; make replay
+	cd rgf; make replay
 
 extract:
 	cd barray; make extract
@@ -40,6 +41,7 @@ extract:
 
 clean:
 	rm -f *.bak
+	cd arrayExtension; rm -f *.bak
 	cd lex; rm -f *.bak
 	cd lexgen; rm -f *.bak
 	cd barray; make clean

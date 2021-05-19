@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
 "http://why3.lri.fr/why3session.dtd">
-<why3session shape_version="7">
-<prover id="0" name="Z3" version="4.7.1" timelimit="15" steplimit="0" memlimit="1000"/>
-<prover id="2" name="Alt-Ergo" version="2.2.0" timelimit="20" steplimit="0" memlimit="1000"/>
-<file proved="true">
+<why3session shape_version="6">
+<prover id="0" name="Alt-Ergo" version="2.4.0" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="1" name="Z3" version="4.8.10" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="2" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="whyml" proved="true">
 <path name=".."/><path name="Barray.mlw"/>
 <theory name="Barray" proved="true">
- <goal name="VC b_barray" expl="VC for b_barray" proved="true">
- <proof prover="2"><result status="valid" time="4.60" steps="7353"/></proof>
+ <goal name="b_barray&#39;vc" expl="VC for b_barray" proved="true">
+ <proof prover="0"><result status="valid" time="0.08" steps="598"/></proof>
  </goal>
 </theory>
 <theory name="Enum" proved="true">
- <goal name="VC create_cursor" expl="VC for create_cursor" proved="true">
- <proof prover="2"><result status="valid" time="1.44" steps="2848"/></proof>
+ <goal name="create_cursor&#39;vc" expl="VC for create_cursor" proved="true">
+ <proof prover="0"><result status="valid" time="0.31" steps="1897"/></proof>
  </goal>
- <goal name="VC next" expl="VC for next" proved="true">
- <proof prover="0"><result status="valid" time="0.19" steps="200875"/></proof>
- <proof prover="2"><result status="timeout" time="20.00"/></proof>
+ <goal name="next&#39;vc" expl="VC for next" proved="true">
+ <proof prover="0"><result status="timeout" time="20.00"/></proof>
+ <proof prover="1"><result status="valid" time="0.40" steps="2930185"/></proof>
+ <proof prover="2"><result status="timeout" time="1.00" steps="112686"/></proof>
  </goal>
 </theory>
 </file>

@@ -59,6 +59,21 @@ module Enum
   clone export lexgen.LexIntXX with
     predicate is_XX = is_sorted
 
+  (** Lemma for the proof of the postcondition
+        `ensures  { c.new -> inc (old c.current.data) c.current.data }`
+      of `next`. *)
+  lemma sorted_inc: forall a b: array int32, k: int32, r: int32.
+    0 < k ->
+    0 <= r < a.length ->
+    is_sorted a k ->
+    cte_sub a (r+1) a.length (k-1) ->
+    is_sorted b k ->
+    a.length = b.length ->
+    cte_sub b (r+1) a.length b[r] ->
+    b[r] = a[r]+1 ->
+    array_eq_sub a b 0 r ->
+    inc a b k
+
   let partial create_cursor (n k: int32) : cursor
     requires { 0 < n /\ 0 < k }
     ensures  { not result.freed }
@@ -82,33 +97,38 @@ module Enum
     requires { sound c k }
     ensures  { sound c k }
     ensures  { length c.current.data = length (old c.current.data) }
+    ensures  { not c.new -> array_eq (old c.current.data) c.current.data }
+    ensures  { not c.new -> max_lex (old c.current.data) k }
+    ensures  { not c.new -> max_lex c.current.data k }
     ensures  { c.new -> lt_lex (old c.current.data) c.current.data }
     ensures  { c.new -> inc (old c.current.data) c.current.data k }
-    ensures  { not c.new -> max_lex c.current.data k }
-    ensures  { not c.new -> array_eq (old c.current.data) c.current.data }
   =
     let a = get_current c in
-    label L in
     let n = c.len in
     let ref r = (n-1) in
     while r >= 0 && a[r] = k-1 do
       invariant { -1 <= r < n }
       invariant { cte_sub a (r+1) n (k-1) }
-      variant { r + 1 }
-      r <- r - 1
+      invariant { array_eq (old c.current.data) c.current.data }
+      variant { r+1 }
+      r <- r-1
     done;
-    if (r < 0) then
+    if r < 0 then
       c.new <- false
     else begin
       a[r] <- a[r] + 1;
       for i = r+1 to n-1 do
         invariant { r+1 <= i <= n }
-        invariant { (a at L)[r]+1 = a[r] }
-        invariant { cte_sub a (r+1) i a[r] }
-        invariant { lt_lex_at (a at L) a r }
+        invariant { (old c.current.data)[r]+1 = c.current.data[r] }
+        invariant { cte_sub c.current.data (r+1) i c.current.data[r] }
+        invariant { c.current.data[r] = (old c.current.data)[r]+1 }
+        invariant { array_eq_sub (old c.current.data) c.current.data 0 r }
+        invariant { lt_lex_at (old c.current.data) c.current.data r }
         a[i] <- a[r]
       done;
       c.new <- true;
-      end
+      assert { sound c k };
+      assert { inc (old c.current.data) c.current.data k }
+    end
 
 end

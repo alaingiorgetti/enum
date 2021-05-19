@@ -1,5 +1,10 @@
 module lexgen.Cursor
 
+  prelude export "#include <stdlib.h>"
+  interface export "#include <stdlib.h>"
+  prelude export "#include <assert.h>"
+  interface export "#include <assert.h>"
+
   syntax val ([]) "%1[%2]"
   syntax val ([]<-) "%1[%2] = %3"
   syntax val get_current "%1->current"

@@ -1,5 +1,5 @@
 (********************************************************************)
-(* Copyright (C) 2019 Clotilde Erard and Alain Giorgetti            *)
+(* Copyright (C) 2019-2021 Clotilde Erard and Alain Giorgetti       *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -8,19 +8,59 @@
 (*  General Public License version 2.1                              *)
 (********************************************************************)
 
+(* Extensions of stdlib/array.mlw with int32 *)
+
+module Array
+
+  use int.Int
+  use array.Array
+  use mach.int.Int32
+
+  let copy (a b: array int32) : unit
+    requires { b.length = a.length }
+    ensures  { forall i. 0 <= i < a.length -> b[i] = a[i] }
+  =
+    for i = 0 to a.length-1 do
+      invariant { forall j. 0 <= j < i -> b[j] = a[j] }
+      b[i] <- a[i]
+    done
+
+end
+
+
 module ArrayInjection
 
   use int.Int
   use array.Array
   use mach.int.Int32
   use lexgen.Cursor
+  use map.Occ
 
+  predicate injective (a: array int32) = (* injective_sub a a.length *)
+    forall i j: int. 0 <= i < a.length -> 0 <= j < a.length -> i <> j -> a[i] <> a[j]
+  predicate range (a: array int32) = (* range_sub a 0 a.length a.length *)
+    forall i: int. 0 <= i < a.length -> 0 <= a[i] < a.length
+
+  lemma injection_occ: forall a: array int32.
+    injective a <-> forall v:int32. (occ v a.elts 0 a.length <= 1)
+  (* Interactive proof with Why3 *)
+
+  let predicate in_interval (x l u: int) = l <= x < u
+
+  predicate range_sub (a: array int32) (l u b: int) =
+    forall i: int. l <= i < u -> in_interval a[i] 0 b
+
+  predicate inj_sub (a: array int32) (l u: int) = forall i: int.
+    l <= i < u -> forall j: int. l <= j < u -> i <> j -> a.elts i <> a.elts j
+
+  (* The following predicates and Boolean functions 
+     are used for BET in permutation/Permutation.mlw *)
   predicate diff_sub (a: array int32) (i: int) (u: int) =
     forall j: int. 0 <= j < u -> i <> j -> a[i] <> a[j]
 
-  predicate diff (a: array int32) (i: int) =
-    diff_sub a i a.length
-
+  predicate diff (a: array int32) (i: int) = (* diff_sub a i a.length *)
+    forall j: int. 0 <= j < a.length -> i <> j -> a[i] <> a[j]
+ 
   let function b_diff (a: array int32) (i n: int32) : bool
     requires { n = a.length }
     requires { 0 <= i < a.length }
@@ -32,27 +72,15 @@ module ArrayInjection
     done;
     true
 
-  predicate injective_sub (a: array int32) (u: int) =
-    forall i: int. 0 <= i < u -> diff a i
-
-  predicate injective (a: array int32) =
-    injective_sub a a.length
-
   let function b_injective (a: array int32) (n: int32) : bool
     requires { n = a.length }
     ensures  { result <-> injective a }
   =
     for j = 0 to n - 1 do
-      invariant { injective_sub a j }
+      invariant { inj_sub a 0 j }
       if not (b_diff a j n) then return false
     done;
     true
-
-  predicate range_sub (a: array int32) (l u k: int) = 
-    forall i: int. l <= i < u -> 0 <= a[i] < k
-
-  predicate range (a: array int32) =
-    range_sub a 0 a.length a.length
 
   let function b_range (a: array int32) (n: int32) : bool
     requires { n = a.length }
@@ -81,6 +109,20 @@ module Cte
 end
 
 
+module Id
+
+  use int.Int
+  use array.Array
+  use mach.int.Int32
+
+  predicate is_id_sub (a: array int32) (l u: int) =
+    forall i:int. l <= i < u -> a[i] = i
+
+  predicate is_id (a: array int32) = is_id_sub a 0 a.length
+
+end
+
+
 module Inc
 
   use int.Int
@@ -105,19 +147,5 @@ module Dec
     forall i j:int. l <= i < j < u -> a[j] < a[i]
 
   predicate is_dec (a: array int32) = is_dec_sub a 0 a.length
-
-end
-
-
-module Id
-
-  use int.Int
-  use array.Array
-  use mach.int.Int32
-
-  predicate is_id_sub (a: array int32) (l u: int) =
-    forall i:int. l <= i < u -> a[i] = i
-
-  predicate is_id (a: array int32) = is_id_sub a 0 a.length
 
 end

@@ -6,7 +6,7 @@ let b_rgf (a: (Z.t) array) : bool =
     then raise (QtReturn1 true)
     else
       begin
-        if not (Z.equal (a.(Z.to_int Z.zero)) Z.zero)
+        if not (Z.equal a.(Z.to_int Z.zero) Z.zero)
         then raise (QtReturn1 false)
         else
           begin
@@ -16,8 +16,10 @@ let b_rgf (a: (Z.t) array) : bool =
               then begin
                 if
                   not (let q1_ = a.(Z.to_int i1) in
-                       Z.leq Z.zero q1_ && Z.leq q1_ (Z.add (a.(Z.to_int 
-                                                             (Z.sub i1 Z.one))) Z.one))
+                       Z.leq Z.zero q1_ && Z.leq q1_
+                                           (Z.add a.(Z.to_int (Z.sub i1
+                                                               Z.one))
+                                            Z.one))
                 then raise (QtReturn1 false);
                 for_loop_to3 (Z.succ i1)
               end

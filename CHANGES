@@ -24,7 +24,21 @@ o Folder Why3 with more WhyML generators than in ENUM 1.1
 
 + Dockerfile
 
-For version 1.2.1
-=================
+Version 1.3
+===========
+
++ New file INSTALL.md
+
++ New documentation docs/EG19.pdf
+
+o Updated Dockerfile, with more recent tool versions and vim to edit files
 
 o Simpler code for small_check in Why3/generator/lexgen.mlw
+
++ New generator in Why3/generator/blist/ for bounded lists
+
+- The docker container creation script ctrmac.sh for Mac OS no longer works
+
+- Soundness and completeness proofs for ptrWhy3/permutation/Permutation.mlw
+  are temporarily broken. They will be restored in a subsequent release.
+

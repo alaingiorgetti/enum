@@ -10,18 +10,16 @@ let next (c: Lexgen__Cursor.cursor) : unit =
   else
     begin
       let r2 = ref (Z.sub n Z.one) in
-      while Z.geq (!r2) Z.one && Z.equal (a.(Z.to_int (!r2))) (Z.add 
-                                                               (a.(Z.to_int 
-                                                                (Z.sub 
-                                                                 (!r2) Z.one))) Z.one) do
-        r2 := Z.sub (!r2) Z.one
+      while Z.geq !r2 Z.one && Z.equal a.(Z.to_int !r2)
+                               (Z.add a.(Z.to_int (Z.sub !r2 Z.one)) Z.one) do
+        r2 := Z.sub !r2 Z.one
       done;
-      if Z.equal (!r2) Z.zero
+      if Z.equal !r2 Z.zero
       then c.Lexgen__Cursor.new1 <- false
       else
         begin
-          a.(Z.to_int (!r2)) <- Z.add (a.(Z.to_int (!r2))) Z.one;
-          (let o = Z.sub n Z.one in let o1 = Z.add (!r2) Z.one in
+          a.(Z.to_int !r2) <- Z.add a.(Z.to_int !r2) Z.one;
+          (let o = Z.sub n Z.one in let o1 = Z.add !r2 Z.one in
            let rec for_loop_to4 i2 =
              if Z.leq i2 o
              then begin

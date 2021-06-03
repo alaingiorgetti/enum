@@ -4,6 +4,8 @@ Require Import BuiltIn.
 Require BuiltIn.
 Require HighOrd.
 Require int.Int.
+Require int.Abs.
+Require int.EuclideanDivision.
 Require map.Map.
 Require map.Occ.
 Require map.MapPermut.
@@ -508,6 +510,13 @@ Axiom value_on_strict_suffix :
   permut_sub a b l u /\ lt_lex_sub_at a b l u l ->
   exists i:Numbers.BinNums.Z,
   ((l < i)%Z /\ (i < u)%Z) /\ ((mixfix_lbrb b l) = (mixfix_lbrb a i)).
+
+(* Why3 assumption *)
+Definition mirror (a:array Numbers.BinNums.Z) (b:array Numbers.BinNums.Z)
+    (k:Numbers.BinNums.Z) (l:Numbers.BinNums.Z) (u:Numbers.BinNums.Z) : Prop :=
+  forall (i:Numbers.BinNums.Z), (l <= i)%Z /\ (i < k)%Z /\ (k <= u)%Z ->
+  ((mixfix_lbrb a i) = (mixfix_lbrb b (((u + l)%Z - 1%Z)%Z - i)%Z)) /\
+  ((mixfix_lbrb b i) = (mixfix_lbrb a (((u + l)%Z - 1%Z)%Z - i)%Z)).
 
 Axiom array_eq_sub_trunc :
   forall (a:array Numbers.BinNums.Z) (b:array Numbers.BinNums.Z)

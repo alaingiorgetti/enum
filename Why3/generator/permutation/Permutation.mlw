@@ -32,10 +32,13 @@ module Permutation
     0 <= a.length = b.length /\ is_permut a /\ is_permut b
     -> permut a b 0 a.length
 
-  (* These two predicates specify that a[k] is the smallest value bigger than a[r] in
-     the array a[r+1..a.length-1]: *)
-  predicate im_sup1 (a: array int) (r k:int) = forall i:int. r < i < k -> a[k] < a[i]
-  predicate im_sup2 (a: array int) (r k:int) = forall i:int. k < i < a.length -> a[i] < a[r]
+  (* These two predicates specify that a[k] is the smallest value bigger than
+     a[r] in the array a[r+1..a.length-1]: *)
+  predicate im_sup1 (a: array int) (r k:int) =
+    forall i:int. r < i < k -> a[k] < a[i]
+
+  predicate im_sup2 (a: array int) (r k:int) =
+    forall i:int. k < i < a.length -> a[i] < a[r]
 
   lemma min_lex_sub: forall a: array int, l u: int.
     0 <= l < u <= a.length /\ injective a /\ is_inc_sub a l u
@@ -130,19 +133,6 @@ module Enum
     0 <= l < u <= a.length = b.length /\ permut_sub a b l u /\ lt_lex_sub_at a b l u l
     -> exists i:int. l < i < u /\ b[l] = a[i]
 
-  (** Auxiliary lemma to prove inc_permut with Coq *)
-  lemma array_eq_sub_trunc: forall a b: array int, l k u: int.
-    0 <= l -> l <= k -> k < u -> u <= a.length -> a.length = b.length -> array_eq_sub a b l u 
-    -> array_eq_sub a b l k
-
-  lemma inc_permut: forall a b: array int, r j:int.
-    0 <= r < j < a.length = b.length /\ is_permut a /\ is_dec_sub a (r+1) a.length /\
-    is_permut b /\ is_inc_sub b (r+1) a.length /\
-    lt_lex_at a b r /\ permut_sub a b r a.length /\
-    im_sup1 a r j /\ im_sup2 a r j /\ b[r] = a[j]
-    -> inc a b
-  (** Proved with Coq and lemma `array_eq_sub_trunc`. *)
-
   predicate mirror (a b: array int) (k l u: int) = 
     forall i. l <= i < k <= u -> a[i] = b[u+l-1-i] /\ b[i] = a[u+l-1-i]
 
@@ -172,6 +162,19 @@ module Enum
       invariant { permut_sub (old a) a l u }
       swap a i (u+l-1-i);
     done
+
+  (** Auxiliary lemma to prove inc_permut with Coq *)
+  lemma array_eq_sub_trunc: forall a b: array int, l k u: int.
+    0 <= l -> l <= k -> k < u -> u <= a.length -> a.length = b.length -> array_eq_sub a b l u 
+    -> array_eq_sub a b l k
+
+  lemma inc_permut: forall a b: array int, r j:int.
+    0 <= r < j < a.length = b.length /\ is_permut a /\ is_dec_sub a (r+1) a.length /\
+    is_permut b /\ is_inc_sub b (r+1) a.length /\
+    lt_lex_at a b r /\ permut_sub a b r a.length /\
+    im_sup1 a r j /\ im_sup2 a r j /\ b[r] = a[j]
+    -> inc a b
+  (** Proved with Coq and lemma `array_eq_sub_trunc`. *)
 
   let next (c: cursor) : unit
     requires { sound c }

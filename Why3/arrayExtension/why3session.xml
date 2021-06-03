@@ -13,27 +13,24 @@
  </goal>
 </theory>
 <theory name="ArrayInjection" proved="true">
- <goal name="injective_surjective" proved="true">
- <proof prover="0" timelimit="5"><result status="valid" time="0.04" steps="6349"/></proof>
- </goal>
  <goal name="injection_occ" proved="true">
- <proof prover="0"><result status="valid" time="0.06" steps="9190"/></proof>
+ <proof prover="0"><result status="valid" time="0.06" steps="9133"/></proof>
  </goal>
  <goal name="endoinjection_occ" proved="true">
  <transf name="split_vc" proved="true" >
   <goal name="endoinjection_occ.0" proved="true">
-  <proof prover="2"><result status="valid" time="2.42" steps="9982541"/></proof>
+  <proof prover="2"><result status="valid" time="5.47" steps="24986585"/></proof>
   </goal>
  </transf>
  </goal>
  <goal name="b_diff&#39;vc" expl="VC for b_diff" proved="true">
- <proof prover="0"><result status="valid" time="0.06" steps="10532"/></proof>
+ <proof prover="0"><result status="valid" time="0.06" steps="10474"/></proof>
  </goal>
  <goal name="b_inj&#39;vc" expl="VC for b_inj" proved="true">
- <proof prover="2"><result status="valid" time="0.07" steps="95285"/></proof>
+ <proof prover="2"><result status="valid" time="0.07" steps="95027"/></proof>
  </goal>
  <goal name="b_range&#39;vc" expl="VC for b_range" proved="true">
- <proof prover="0"><result status="valid" time="0.32" steps="40111"/></proof>
+ <proof prover="0"><result status="valid" time="0.32" steps="40043"/></proof>
  </goal>
 </theory>
 <theory name="Quant" proved="true">

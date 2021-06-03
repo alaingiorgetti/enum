@@ -1,5 +1,5 @@
 (***************************************************************************)
-(* Copyright (C) 2018-20 Clotilde Erard, Alain Giorgetti and Rémi Lazarini *)
+(* Copyright (C) 2018-21 Clotilde Erard, Alain Giorgetti and Rémi Lazarini *)
 (* FEMTO-ST institute                                                      *)
 (***************************************************************************)
 
@@ -28,7 +28,8 @@ end
 
 (** Restriction of map.MapInjection to arrays. *)
 
-theory ArrayInjection
+module ArrayInjection
+
   use int.Int
   use ref.Ref
   use array.Array
@@ -39,21 +40,22 @@ theory ArrayInjection
   predicate surjective (a: array int) = M.surjective a.elts a.length
   predicate range (a: array int) = M.range a.elts a.length
 
+(* Not necessary, never used? Useful to prove endoinjection_occ?
   lemma injective_surjective: forall a: array int.
     injective a -> range a -> surjective a
+*)
 
   lemma injection_occ: forall a: array int.
     injective a <-> forall v:int. (occ v a.elts 0 a.length <= 1)
 
   lemma endoinjection_occ: [@split_all_full] forall a: array int. 
     M.range (a.elts) a.length /\ injective a
-    -> forall v:int. 0 <= v < a.length
-    -> occ v a.elts 0 a.length = 1
+    -> forall v:int. 0 <= v < a.length -> occ v a.elts 0 a.length = 1
 
   let predicate in_interval (x l u: int) = l <= x < u
 
   (* The following two predicates could be generalized to maps and added to 
-     module MapInjection in stdlib/map.mlw. *)
+     the module MapInjection in stdlib/map.mlw. *)
   predicate range_sub (a: array int) (l u b: int) = forall i: int.
     l <= i < u -> in_interval a[i] 0 b
 
@@ -73,7 +75,7 @@ theory ArrayInjection
     ensures { result <-> diff a i }
   =
     let n = a.length in
-    for j = 0 to n - 1 do
+    for j = 0 to n-1 do
       invariant { diff_sub a i j }
       if (a[j] = a[i] && j <> i) then return false
     done;

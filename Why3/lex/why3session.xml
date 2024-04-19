@@ -5,6 +5,7 @@
 <prover id="0" name="Alt-Ergo" version="2.4.0" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="1" name="Z3" version="4.8.10" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="2" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="3" name="Alt-Ergo" version="2.4.1" timelimit="5" steplimit="0" memlimit="1000"/>
 <file format="whyml" proved="true">
 <path name=".."/><path name="lex.mlw"/>
 <theory name="Lex" proved="true">
@@ -13,9 +14,10 @@
  <proof prover="2"><result status="unknown" time="0.26" steps="26708"/></proof>
  </goal>
  <goal name="not_array_eq_sub&#39;vc" expl="VC for not_array_eq_sub" proved="true">
- <proof prover="0"><result status="valid" time="0.04" steps="227"/></proof>
- <proof prover="1"><result status="unknown" time="0.09" steps="234515"/></proof>
- <proof prover="2"><result status="unknown" time="0.32" steps="42114"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.04" steps="227"/></proof>
+ <proof prover="1" obsolete="true"><result status="unknown" time="0.09" steps="234515"/></proof>
+ <proof prover="2" obsolete="true"><result status="unknown" time="0.32" steps="42114"/></proof>
+ <proof prover="3"><result status="valid" time="0.02" steps="183"/></proof>
  </goal>
  <goal name="total_order" proved="true">
  <proof prover="0"><result status="valid" time="0.38" steps="1560"/></proof>

@@ -1,5 +1,5 @@
 (********************************************************************)
-(* Copyright (C) 2019-2021 Clotilde Erard and Alain Giorgetti       *)
+(* Copyright (C) 2019-2024 Clotilde Erard and Alain Giorgetti       *)
 (* FEMTO-ST institute                                               *)
 (********************************************************************)
 
@@ -41,10 +41,21 @@ module ArrayInjection
   predicate range (a: array int32) = (* range_sub a 0 a.length a.length *)
     forall i: int. 0 <= i < a.length -> 0 <= a[i] < a.length
 
-  lemma injection_occ: forall a: array int32.
-    injective a <-> forall v:int32. (occ v a.elts 0 a.length <= 1)
-  (* Interactive proof with Why3 *)
+  lemma occ_injective_aux: forall a: array int32.
+    (forall v:int32. occ v a.elts 0 a.length <= 1) ->
+    forall i j: int. 0 <= i < a.length -> 0 <= j < a.length -> a[i] = a[j] -> i = j
+  by ((i < j -> occ a[i] a.elts 0 i + occ a[i] a.elts i a.length >= 2) /\ 
+      (j < i -> occ a[i] a.elts 0 j + occ a[i] a.elts j a.length >= 2))
+  (* With this 'by', the lemma is proved by Auto level 2 *)
+  
+  lemma occ_injective: forall a: array int32.
+    (forall v:int32. occ v a.elts 0 a.length <= 1) -> injective a
+  (* Automatically proved from occ_injective_aux *)
 
+  lemma injection_occ: forall a: array int32.
+    injective a <-> forall v:int32. occ v a.elts 0 a.length <= 1
+  (* Automatically proved from occ_injective *)
+  
   let predicate in_interval (x l u: int) = l <= x < u
 
   predicate range_sub (a: array int32) (l u b: int) =

@@ -5,11 +5,14 @@
 <prover id="0" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="1" name="Alt-Ergo" version="2.4.0" timelimit="20" steplimit="0" memlimit="1000"/>
 <prover id="2" name="Z3" version="4.7.1" timelimit="5" steplimit="0" memlimit="1000"/>
+<prover id="3" name="Z3" version="4.8.10" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="4" name="Alt-Ergo" version="2.4.1" timelimit="5" steplimit="0" memlimit="1000"/>
 <file format="whyml" proved="true">
 <path name=".."/><path name="arrayExtension.mlw"/>
 <theory name="Array" proved="true">
  <goal name="copy&#39;vc" expl="VC for copy" proved="true">
- <proof prover="0"><result status="valid" time="0.07" steps="5772"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.07" steps="5772"/></proof>
+ <proof prover="4"><result status="valid" time="0.01" steps="125"/></proof>
  </goal>
 </theory>
 <theory name="ArrayInjection" proved="true">
@@ -24,27 +27,57 @@
  </transf>
  </goal>
  <goal name="b_diff&#39;vc" expl="VC for b_diff" proved="true">
- <proof prover="0"><result status="valid" time="0.06" steps="10474"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.06" steps="10474"/></proof>
+ <proof prover="4"><result status="valid" time="0.11" steps="1044"/></proof>
  </goal>
  <goal name="b_inj&#39;vc" expl="VC for b_inj" proved="true">
- <proof prover="2"><result status="valid" time="0.07" steps="95027"/></proof>
+ <proof prover="0"><result status="timeout" time="1.00" steps="98229"/></proof>
+ <proof prover="3"><result status="timeout" time="5.00" steps="11403920"/></proof>
+ <proof prover="4" timelimit="1"><result status="timeout" time="1.00"/></proof>
+ <transf name="split_vc" proved="true" >
+  <goal name="b_inj&#39;vc.0" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.04" steps="8369"/></proof>
+  </goal>
+  <goal name="b_inj&#39;vc.1" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.02" steps="7400"/></proof>
+  </goal>
+  <goal name="b_inj&#39;vc.2" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.04" steps="10130"/></proof>
+  </goal>
+  <goal name="b_inj&#39;vc.3" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.03" steps="9553"/></proof>
+  </goal>
+  <goal name="b_inj&#39;vc.4" expl="postcondition" proved="true">
+  <proof prover="0"><result status="timeout" time="1.00" steps="132701"/></proof>
+  <proof prover="3"><result status="valid" time="0.24" steps="920137"/></proof>
+  <proof prover="4" timelimit="1"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="b_inj&#39;vc.5" expl="VC for b_inj" proved="true">
+  <proof prover="0"><result status="valid" time="0.02" steps="8369"/></proof>
+  </goal>
+ </transf>
  </goal>
  <goal name="b_range&#39;vc" expl="VC for b_range" proved="true">
- <proof prover="0"><result status="valid" time="0.32" steps="40043"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.32" steps="40043"/></proof>
+ <proof prover="4"><result status="valid" time="0.36" steps="2622"/></proof>
  </goal>
 </theory>
 <theory name="Quant" proved="true">
  <goal name="for_all_sub&#39;vc" expl="VC for for_all_sub" proved="true">
- <proof prover="0"><result status="valid" time="0.04" steps="5347"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.04" steps="5347"/></proof>
+ <proof prover="4"><result status="valid" time="0.01" steps="86"/></proof>
  </goal>
  <goal name="for_all&#39;vc" expl="VC for for_all" proved="true">
- <proof prover="0"><result status="valid" time="0.07" steps="7397"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.07" steps="7397"/></proof>
+ <proof prover="4"><result status="valid" time="0.01" steps="107"/></proof>
  </goal>
  <goal name="for_some_sub&#39;vc" expl="VC for for_some_sub" proved="true">
- <proof prover="0"><result status="valid" time="0.05" steps="6776"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.05" steps="6776"/></proof>
+ <proof prover="4"><result status="valid" time="0.01" steps="100"/></proof>
  </goal>
  <goal name="for_some&#39;vc" expl="VC for for_some" proved="true">
- <proof prover="0"><result status="valid" time="0.05" steps="8135"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.05" steps="8135"/></proof>
+ <proof prover="4"><result status="valid" time="0.01" steps="109"/></proof>
  </goal>
  <goal name="mem_sub&#39;vc" expl="VC for mem_sub" proved="true">
  <proof prover="0"><result status="valid" time="0.04" steps="5497"/></proof>
@@ -55,12 +88,14 @@
 </theory>
 <theory name="ToList" proved="true">
  <goal name="to_list&#39;vc" expl="VC for to_list" proved="true">
- <proof prover="1"><result status="valid" time="0.00" steps="9"/></proof>
+ <proof prover="1" obsolete="true"><result status="valid" time="0.00" steps="9"/></proof>
+ <proof prover="4"><result status="valid" time="0.00" steps="9"/></proof>
  </goal>
 </theory>
 <theory name="Inc" proved="true">
  <goal name="b_inc&#39;vc" expl="VC for b_inc" proved="true">
- <proof prover="0"><result status="valid" time="0.14" steps="14596"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.14" steps="14596"/></proof>
+ <proof prover="4"><result status="valid" time="0.02" steps="175"/></proof>
  </goal>
 </theory>
 </file>

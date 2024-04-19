@@ -6,19 +6,40 @@
 <prover id="1" name="Z3" version="4.8.10" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="2" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="3" name="Z3" version="4.7.1" timelimit="30" steplimit="0" memlimit="1000"/>
+<prover id="4" name="Alt-Ergo" version="2.4.1" timelimit="5" steplimit="0" memlimit="1000"/>
 <file format="whyml" proved="true">
 <path name=".."/><path name="arrayExtension.mlw"/>
 <theory name="Array" proved="true">
  <goal name="copy&#39;vc" expl="VC for copy" proved="true">
- <proof prover="0" timelimit="20"><result status="valid" time="0.01" steps="98"/></proof>
+ <proof prover="0" timelimit="20" obsolete="true"><result status="valid" time="0.01" steps="98"/></proof>
+ <proof prover="4"><result status="valid" time="0.01" steps="98"/></proof>
  </goal>
 </theory>
 <theory name="ArrayInjection" proved="true">
+ <goal name="occ_injective_aux" proved="true">
+ <proof prover="1"><result status="timeout" time="1.00" steps="9807602"/></proof>
+ <proof prover="2"><result status="unknown" time="0.11" steps="22157"/></proof>
+ <proof prover="4" timelimit="1"><result status="timeout" time="1.00"/></proof>
+ <transf name="split_vc" proved="true" >
+  <goal name="occ_injective_aux.0" proved="true">
+  <proof prover="2"><result status="valid" time="0.20" steps="48977"/></proof>
+  </goal>
+  <goal name="occ_injective_aux.1" proved="true">
+  <proof prover="2"><result status="valid" time="0.21" steps="49060"/></proof>
+  </goal>
+  <goal name="occ_injective_aux.2" proved="true">
+  <proof prover="2"><result status="timeout" time="1.00" steps="124859"/></proof>
+  <proof prover="4" timelimit="1"><result status="valid" time="0.05" steps="384"/></proof>
+  </goal>
+ </transf>
+ </goal>
+ <goal name="occ_injective" proved="true">
+ <proof prover="4"><result status="valid" time="0.01" steps="50"/></proof>
+ </goal>
  <goal name="injection_occ" proved="true">
- <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
- <proof prover="1"><result status="timeout" time="1.00" steps="3538028"/></proof>
- <proof prover="2"><result status="timeout" time="1.00" steps="172555"/></proof>
- <proof prover="3"><result status="timeout" time="30.00" steps="163146653"/></proof>
+ <proof prover="1"><result status="timeout" time="1.00" steps="5265283"/></proof>
+ <proof prover="2"><result status="timeout" time="1.00" steps="155020"/></proof>
+ <proof prover="3"><result status="timeout" time="30.00" steps="146267269"/></proof>
  <transf name="split_vc" proved="true" >
   <goal name="injection_occ.0" proved="true">
   <transf name="inline_goal" proved="true" >
@@ -33,11 +54,11 @@
        <goal name="injection_occ.0.0.0.0.0.0" expl="right case" proved="true">
        <transf name="rewrite" proved="true" arg1="occ_append" arg2="with" arg3="i">
         <goal name="injection_occ.0.0.0.0.0.0.0" expl="right case" proved="true">
-        <proof prover="1"><result status="valid" time="0.14" steps="176413"/></proof>
-        <proof prover="2"><result status="timeout" time="1.00" steps="92655"/></proof>
+        <proof prover="1"><result status="valid" time="0.14" steps="121908"/></proof>
+        <proof prover="2"><result status="timeout" time="1.00" steps="114935"/></proof>
         </goal>
         <goal name="injection_occ.0.0.0.0.0.0.1" expl="rewrite premises" proved="true">
-        <proof prover="2"><result status="valid" time="0.07" steps="13459"/></proof>
+        <proof prover="2"><result status="valid" time="0.07" steps="14090"/></proof>
         </goal>
        </transf>
        </goal>
@@ -46,7 +67,7 @@
      </transf>
      </goal>
      <goal name="injection_occ.0.0.0.1" expl="false case" proved="true">
-     <proof prover="2"><result status="valid" time="0.14" steps="22062"/></proof>
+     <proof prover="2"><result status="valid" time="0.14" steps="22645"/></proof>
      </goal>
     </transf>
     </goal>
@@ -55,112 +76,112 @@
   </transf>
   </goal>
   <goal name="injection_occ.1" proved="true">
-  <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1"><result status="timeout" time="1.00" steps="18068999"/></proof>
-  <proof prover="2"><result status="timeout" time="1.00" steps="207783"/></proof>
+  <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1"><result status="valid" time="0.03" steps="75795"/></proof>
+  <proof prover="2"><result status="valid" time="0.05" steps="16490"/></proof>
   <transf name="inline_goal" proved="true" >
    <goal name="injection_occ.1.0" proved="true">
    <transf name="split_all_full" proved="true" >
     <goal name="injection_occ.1.0.0" proved="true">
-    <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-    <proof prover="1"><result status="timeout" time="1.00" steps="7088755"/></proof>
-    <proof prover="2"><result status="timeout" time="1.00" steps="230741"/></proof>
+    <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+    <proof prover="1"><result status="valid" time="0.04" steps="82578"/></proof>
+    <proof prover="2"><result status="valid" time="0.07" steps="18423"/></proof>
     <transf name="split_vc" proved="true" >
      <goal name="injection_occ.1.0.0.0" proved="true">
-     <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-     <proof prover="1"><result status="timeout" time="1.00" steps="7078277"/></proof>
-     <proof prover="2"><result status="timeout" time="1.00" steps="245935"/></proof>
+     <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1"><result status="valid" time="0.04" steps="82440"/></proof>
+     <proof prover="2"><result status="valid" time="0.08" steps="18309"/></proof>
      <transf name="inline_goal" proved="true" >
       <goal name="injection_occ.1.0.0.0.0" proved="true">
-      <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-      <proof prover="1"><result status="timeout" time="1.00" steps="6098447"/></proof>
-      <proof prover="2"><result status="timeout" time="1.00" steps="229451"/></proof>
-      <transf name="cut" proved="true" arg1="(a[i] = a[j] -&gt; i = j)">
-       <goal name="injection_occ.1.0.0.0.0.0" proved="true">
-       <proof prover="0" timelimit="20"><result status="valid" time="0.02" steps="20"/></proof>
+      <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+      <proof prover="1"><result status="valid" time="0.05" steps="99490"/></proof>
+      <proof prover="2"><result status="valid" time="0.06" steps="18442"/></proof>
+      <transf name="cut" arg1="(a[i] = a[j] -&gt; i = j)">
+       <goal name="injection_occ.1.0.0.0.0.0">
+       <proof prover="0" timelimit="20" obsolete="true"><result status="valid" time="0.02" steps="20"/></proof>
        </goal>
        <goal name="injection_occ.1.0.0.0.0.1" expl="asserted formula" proved="true">
-       <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-       <proof prover="1"><result status="timeout" time="1.00" steps="7202139"/></proof>
-       <proof prover="2"><result status="timeout" time="1.00" steps="245147"/></proof>
-       <transf name="intros" proved="true" arg1="E">
-        <goal name="injection_occ.1.0.0.0.0.1.0" expl="asserted formula" proved="true">
-        <transf name="case" proved="true" arg1="(i &lt; j)">
+       <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+       <proof prover="1"><result status="valid" time="0.04" steps="82442"/></proof>
+       <proof prover="2"><result status="valid" time="0.06" steps="18315"/></proof>
+       <transf name="intros" arg1="E">
+        <goal name="injection_occ.1.0.0.0.0.1.0" expl="asserted formula">
+        <transf name="case" arg1="(i &lt; j)">
          <goal name="injection_occ.1.0.0.0.0.1.0.0" expl="asserted formula (true case)" proved="true">
          <transf name="cut" arg1="(occ a[i] a.elts 0 (length1 a) = 2)">
-          <goal name="injection_occ.1.0.0.0.0.1.0.0.0" expl="asserted formula (true case)" proved="true">
-          <proof prover="0" timelimit="20"><result status="valid" time="0.02" steps="43"/></proof>
+          <goal name="injection_occ.1.0.0.0.0.1.0.0.0" expl="asserted formula (true case)">
+          <proof prover="0" timelimit="20" obsolete="true"><result status="valid" time="0.02" steps="43"/></proof>
           </goal>
-          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula">
-          <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-          <proof prover="1"><result status="timeout" time="1.00" steps="5842369"/></proof>
-          <proof prover="2"><result status="timeout" time="1.00" steps="102003"/></proof>
-          <transf name="rewrite" arg1="occ_right_add">
+          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula" proved="true">
+          <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+          <proof prover="1"><result status="valid" time="0.03" steps="87700"/></proof>
+          <proof prover="2"><result status="valid" time="0.07" steps="18843"/></proof>
+          <transf name="rewrite" proved="true" arg1="occ_right_add">
            <goal name="injection_occ.1.0.0.0.0.1.0.0.1.0" expl="asserted formula" proved="true">
-           <proof prover="0" timelimit="1"><result status="valid" time="0.11" steps="609"/></proof>
-           <proof prover="1"><result status="timeout" time="1.00" steps="5554957"/></proof>
-           <proof prover="2"><result status="timeout" time="1.00" steps="153229"/></proof>
+           <proof prover="0" timelimit="1" obsolete="true"><result status="valid" time="0.11" steps="609"/></proof>
+           <proof prover="1"><result status="valid" time="0.04" steps="88448"/></proof>
+           <proof prover="2"><result status="valid" time="0.07" steps="18919"/></proof>
            </goal>
            <goal name="injection_occ.1.0.0.0.0.1.0.0.1.1" expl="rewrite premises" proved="true">
-           <proof prover="2"><result status="valid" time="0.07" steps="13838"/></proof>
+           <proof prover="2"><result status="valid" time="0.07" steps="17029"/></proof>
            </goal>
-           <goal name="injection_occ.1.0.0.0.0.1.0.0.1.2" expl="rewrite premises">
-           <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-           <proof prover="1"><result status="timeout" time="1.00" steps="6095682"/></proof>
-           <proof prover="2"><result status="unknown" time="0.13" steps="23758"/></proof>
-           <transf name="inline_goal" >
-            <goal name="injection_occ.1.0.0.0.0.1.0.0.1.2.0" expl="rewrite premises">
-            <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-            <proof prover="1"><result status="timeout" time="1.00" steps="9505767"/></proof>
-            <proof prover="2"><result status="timeout" time="1.00" steps="203183"/></proof>
+           <goal name="injection_occ.1.0.0.0.0.1.0.0.1.2" expl="rewrite premises" proved="true">
+           <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+           <proof prover="1"><result status="valid" time="0.03" steps="82894"/></proof>
+           <proof prover="2"><result status="valid" time="0.05" steps="18412"/></proof>
+           <transf name="inline_goal" proved="true" >
+            <goal name="injection_occ.1.0.0.0.0.1.0.0.1.2.0" expl="rewrite premises" proved="true">
+            <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+            <proof prover="1"><result status="valid" time="0.03" steps="82942"/></proof>
+            <proof prover="2"><result status="valid" time="0.06" steps="18436"/></proof>
             </goal>
            </transf>
            </goal>
           </transf>
           </goal>
          </transf>
-         <transf name="cut" arg1="(occ a[i] a.elts 0 (i+1) = 2)">
-          <goal name="injection_occ.1.0.0.0.0.1.0.0.0" expl="asserted formula (true case)">
-          <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-          <proof prover="1"><result status="timeout" time="1.00" steps="4495911"/></proof>
-          <proof prover="2"><result status="timeout" time="1.00" steps="147877"/></proof>
+         <transf name="cut" proved="true" arg1="(occ a[i] a.elts 0 (i+1) = 2)">
+          <goal name="injection_occ.1.0.0.0.0.1.0.0.0" expl="asserted formula (true case)" proved="true">
+          <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+          <proof prover="1"><result status="valid" time="0.05" steps="122502"/></proof>
+          <proof prover="2"><result status="valid" time="0.06" steps="18916"/></proof>
           </goal>
-          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula">
-          <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-          <proof prover="1"><result status="timeout" time="1.00" steps="6560912"/></proof>
-          <proof prover="2"><result status="timeout" time="1.00" steps="139340"/></proof>
+          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula" proved="true">
+          <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+          <proof prover="1"><result status="valid" time="0.05" steps="119908"/></proof>
+          <proof prover="2"><result status="valid" time="0.06" steps="18895"/></proof>
           </goal>
          </transf>
-         <transf name="cut" arg1="(occ a[j] a.elts 0 (j+1) = 2)">
-          <goal name="injection_occ.1.0.0.0.0.1.0.0.0" expl="asserted formula (true case)">
-          <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-          <proof prover="1"><result status="timeout" time="1.00" steps="2987398"/></proof>
-          <proof prover="2"><result status="timeout" time="1.00" steps="71858"/></proof>
+         <transf name="cut" proved="true" arg1="(occ a[j] a.elts 0 (j+1) = 2)">
+          <goal name="injection_occ.1.0.0.0.0.1.0.0.0" expl="asserted formula (true case)" proved="true">
+          <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+          <proof prover="1"><result status="valid" time="0.06" steps="150849"/></proof>
+          <proof prover="2"><result status="valid" time="0.07" steps="18916"/></proof>
           </goal>
-          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula">
-          <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-          <proof prover="1"><result status="timeout" time="1.00" steps="4569731"/></proof>
-          <proof prover="2"><result status="timeout" time="1.00" steps="146604"/></proof>
-          <transf name="rewrite" arg1="occ_right_add">
-           <goal name="injection_occ.1.0.0.0.0.1.0.0.1.0" expl="asserted formula">
-           <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-           <proof prover="1"><result status="timeout" time="1.00" steps="9381188"/></proof>
-           <proof prover="2"><result status="timeout" time="1.00" steps="132741"/></proof>
+          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula" proved="true">
+          <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+          <proof prover="1"><result status="valid" time="0.05" steps="128134"/></proof>
+          <proof prover="2"><result status="valid" time="0.07" steps="18895"/></proof>
+          <transf name="rewrite" proved="true" arg1="occ_right_add">
+           <goal name="injection_occ.1.0.0.0.0.1.0.0.1.0" expl="asserted formula" proved="true">
+           <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+           <proof prover="1"><result status="valid" time="0.04" steps="97531"/></proof>
+           <proof prover="2"><result status="valid" time="0.07" steps="18865"/></proof>
            </goal>
            <goal name="injection_occ.1.0.0.0.0.1.0.0.1.1" expl="rewrite premises" proved="true">
-           <proof prover="2"><result status="valid" time="0.03" steps="12818"/></proof>
+           <proof prover="2"><result status="valid" time="0.03" steps="16184"/></proof>
            </goal>
            <goal name="injection_occ.1.0.0.0.0.1.0.0.1.2" expl="rewrite premises" proved="true">
-           <proof prover="2"><result status="valid" time="0.07" steps="16063"/></proof>
+           <proof prover="2"><result status="valid" time="0.07" steps="17059"/></proof>
            </goal>
           </transf>
           </goal>
          </transf>
-         <transf name="cut" proved="true" arg1="(occ a[j] a.elts 0 (j+1) &gt;= 2)">
+         <transf name="cut" arg1="(occ a[j] a.elts 0 (j+1) &gt;= 2)">
           <goal name="injection_occ.1.0.0.0.0.1.0.0.0" expl="asserted formula (true case)" proved="true">
-          <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-          <proof prover="1"><result status="timeout" time="1.00" steps="4657817"/></proof>
-          <proof prover="2"><result status="timeout" time="1.00" steps="151743"/></proof>
+          <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+          <proof prover="1"><result status="valid" time="0.05" steps="119265"/></proof>
+          <proof prover="2"><result status="valid" time="0.08" steps="18896"/></proof>
           <transf name="smoke_detector_top" proved="true" >
            <goal name="injection_occ.1.0.0.0.0.1.0.0.0.0" proved="true">
            <transf name="apply" proved="true" arg1="H">
@@ -168,17 +189,17 @@
            </goal>
           </transf>
           </goal>
-          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula" proved="true">
-          <proof prover="0" timelimit="20"><result status="valid" time="0.05" steps="306"/></proof>
+          <goal name="injection_occ.1.0.0.0.0.1.0.0.1" expl="asserted formula">
+          <proof prover="0" timelimit="20" obsolete="true"><result status="valid" time="0.05" steps="306"/></proof>
           </goal>
          </transf>
          </goal>
-         <goal name="injection_occ.1.0.0.0.0.1.0.1" expl="asserted formula (false case)" proved="true">
-         <transf name="case" proved="true" arg1="(i &gt; j)">
+         <goal name="injection_occ.1.0.0.0.0.1.0.1" expl="asserted formula (false case)">
+         <transf name="case" arg1="(i &gt; j)">
           <goal name="injection_occ.1.0.0.0.0.1.0.1.0" expl="asserted formula (false case. true case)" proved="true">
-          <proof prover="0" timelimit="1"><result status="timeout" time="1.00"/></proof>
-          <proof prover="1"><result status="timeout" time="1.00" steps="7249618"/></proof>
-          <proof prover="2"><result status="timeout" time="1.00" steps="218252"/></proof>
+          <proof prover="0" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+          <proof prover="1"><result status="valid" time="0.04" steps="82580"/></proof>
+          <proof prover="2"><result status="valid" time="0.06" steps="18351"/></proof>
           <transf name="smoke_detector_top" proved="true" >
            <goal name="injection_occ.1.0.0.0.0.1.0.1.0.0" proved="true">
            <transf name="apply" proved="true" arg1="H">
@@ -186,8 +207,8 @@
            </goal>
           </transf>
           </goal>
-          <goal name="injection_occ.1.0.0.0.0.1.0.1.1" expl="asserted formula (false case)" proved="true">
-          <proof prover="0" timelimit="20"><result status="valid" time="0.01" steps="20"/></proof>
+          <goal name="injection_occ.1.0.0.0.0.1.0.1.1" expl="asserted formula (false case)">
+          <proof prover="0" timelimit="20" obsolete="true"><result status="valid" time="0.01" steps="20"/></proof>
           </goal>
          </transf>
          </goal>
@@ -208,69 +229,76 @@
  </transf>
  </goal>
  <goal name="b_diff&#39;vc" expl="VC for b_diff" proved="true">
- <proof prover="0"><result status="timeout" time="30.00"/></proof>
- <proof prover="2"><result status="valid" time="0.08" steps="19922"/></proof>
- <transf name="split_vc" proved="true" >
-  <goal name="b_diff&#39;vc.0" expl="integer overflow" proved="true">
-  <proof prover="0"><result status="valid" time="0.01" steps="20"/></proof>
+ <proof prover="0" obsolete="true"><result status="timeout" time="30.00"/></proof>
+ <proof prover="2"><result status="valid" time="0.08" steps="25928"/></proof>
+ <transf name="split_vc" >
+  <goal name="b_diff&#39;vc.0" expl="integer overflow">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01" steps="20"/></proof>
   </goal>
-  <goal name="b_diff&#39;vc.1" expl="loop invariant init" proved="true">
-  <proof prover="0"><result status="valid" time="0.01" steps="45"/></proof>
+  <goal name="b_diff&#39;vc.1" expl="loop invariant init">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01" steps="45"/></proof>
   </goal>
-  <goal name="b_diff&#39;vc.2" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.01" steps="21"/></proof>
+  <goal name="b_diff&#39;vc.2" expl="index in array bounds">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01" steps="21"/></proof>
   </goal>
-  <goal name="b_diff&#39;vc.3" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.01" steps="21"/></proof>
+  <goal name="b_diff&#39;vc.3" expl="index in array bounds">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01" steps="21"/></proof>
   </goal>
-  <goal name="b_diff&#39;vc.4" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.02" steps="76"/></proof>
+  <goal name="b_diff&#39;vc.4" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.02" steps="76"/></proof>
   </goal>
-  <goal name="b_diff&#39;vc.5" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.04" steps="106"/></proof>
+  <goal name="b_diff&#39;vc.5" expl="loop invariant preservation">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.04" steps="106"/></proof>
   </goal>
-  <goal name="b_diff&#39;vc.6" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.02" steps="61"/></proof>
+  <goal name="b_diff&#39;vc.6" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.00" steps="15"/></proof>
   </goal>
-  <goal name="b_diff&#39;vc.7" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.00" steps="15"/></proof>
+  <goal name="b_diff&#39;vc.7" expl="VC for b_diff">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.02" steps="61"/></proof>
   </goal>
  </transf>
  </goal>
  <goal name="b_injective&#39;vc" expl="VC for b_injective" proved="true">
- <proof prover="0"><result status="timeout" time="30.00"/></proof>
- <proof prover="1"><result status="valid" time="0.05" steps="136055"/></proof>
- <proof prover="2"><result status="timeout" time="1.00" steps="96434"/></proof>
+ <proof prover="1"><result status="valid" time="0.05" steps="137086"/></proof>
+ <proof prover="2"><result status="timeout" time="1.00" steps="129932"/></proof>
  <transf name="split_vc" proved="true" >
   <goal name="b_injective&#39;vc.0" expl="integer overflow" proved="true">
-  <proof prover="0"><result status="valid" time="0.02" steps="29"/></proof>
+  <proof prover="0" obsolete="true"><result status="valid" time="0.02" steps="29"/></proof>
+  <proof prover="4"><result status="valid" time="0.01" steps="31"/></proof>
   </goal>
   <goal name="b_injective&#39;vc.1" expl="loop invariant init" proved="true">
-  <proof prover="0"><result status="valid" time="0.02" steps="37"/></proof>
+  <proof prover="0" obsolete="true"><result status="valid" time="0.02" steps="37"/></proof>
+  <proof prover="4"><result status="valid" time="0.01" steps="37"/></proof>
   </goal>
   <goal name="b_injective&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.01" steps="18"/></proof>
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01" steps="18"/></proof>
+  <proof prover="4"><result status="valid" time="0.01" steps="18"/></proof>
   </goal>
   <goal name="b_injective&#39;vc.3" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.01" steps="18"/></proof>
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01" steps="18"/></proof>
+  <proof prover="4"><result status="valid" time="0.01" steps="18"/></proof>
   </goal>
   <goal name="b_injective&#39;vc.4" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.02" steps="68"/></proof>
+  <proof prover="0" obsolete="true"><result status="valid" time="0.02" steps="68"/></proof>
+  <proof prover="4"><result status="valid" time="0.01" steps="69"/></proof>
   </goal>
   <goal name="b_injective&#39;vc.5" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.07" steps="208"/></proof>
+  <proof prover="0" obsolete="true"><result status="valid" time="0.07" steps="208"/></proof>
+  <proof prover="4"><result status="valid" time="0.04" steps="294"/></proof>
   </goal>
   <goal name="b_injective&#39;vc.6" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.27" steps="1141"/></proof>
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01" steps="19"/></proof>
+  <proof prover="4"><result status="valid" time="0.23" steps="1168"/></proof>
   </goal>
-  <goal name="b_injective&#39;vc.7" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.01" steps="19"/></proof>
+  <goal name="b_injective&#39;vc.7" expl="VC for b_injective" proved="true">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.27" steps="1141"/></proof>
+  <proof prover="4"><result status="valid" time="0.01" steps="19"/></proof>
   </goal>
  </transf>
  </goal>
  <goal name="b_range&#39;vc" expl="VC for b_range" proved="true">
- <proof prover="0"><result status="valid" time="0.43" steps="1693"/></proof>
- <proof prover="2"><result status="valid" time="0.09" steps="19267"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.43" steps="1693"/></proof>
+ <proof prover="2"><result status="valid" time="0.09" steps="21672"/></proof>
  </goal>
 </theory>
 </file>

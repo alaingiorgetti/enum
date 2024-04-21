@@ -13,9 +13,9 @@ module Fact
   use int.Int
   use array.Array
 
-  predicate is_fact_sub (a:array int) (l u:int) = 
+  predicate is_fact_sub (a:array int) (l u:int) =
     forall i:int. l <= i < u -> 0 <= a[i] <= i
-    
+
   predicate is_fact (a:array int) = is_fact_sub a 0 a.length
 
   let function b_fact (a: array int) : bool
@@ -41,7 +41,8 @@ module Enum
   use arrayExtension.Id
   use Fact
   use lexgen.Cursor
-  
+  use list.List
+
   clone export lexgen.LexXX with
     predicate is_XX = is_fact
 
@@ -103,7 +104,7 @@ module FactSound
     predicate is_XXX = is_fact,
     val create_cursor = create_cursor,
     val next = next
-    
+
   lemma b_is_fact_sound: forall a: array int. is_fact a -> b_fact a = true
 
   (* Bounded-exhaustive test of the lemma before proving it: *)
@@ -112,6 +113,72 @@ module FactSound
   =
     let n = 5 in
     small_check (fun l -> b_fact (to_array l)) n
+
+end
+
+
+module Code
+  use arrayExtension.ArrayInjection (* for range*, injective and inj_sub *)
+  use int.Int
+  use ref.Ref
+  use array.Array
+  use list.List
+  use list.Length as L
+  use list.Append
+  use list.NthNoOpt
+  use Fact
+  use Permutation.Permutation
+  use listExtension.ListExtension as LE (* for id and rm_nth *)
+  use option.Option
+  use array.ArrayEq (* for equality array_eq_sub of sub-arrays *)
+
+  predicate injlist (l:list int) = forall i j: int.
+    0 <= i < j < L.length l -> nth i l <> nth j l
+
+  (* (not_in_subarray x a l u) holds iff x in not in a[l..u-1]. *)
+  predicate not_in_subarray (x:int) (a:array int) (l u:int) = forall i : int.
+    l <= i < u -> a[i] <> x
+
+  (* (disj_sub a x y l) holds iff a[x..y-1] and l are disjoint *)
+  predicate disj_sub (a: array int) (x y: int) (l:list int) = forall i : int.
+    0 <= i < L.length l -> not_in_subarray (nth i l) a x y
+
+  (* Transformation of factorials into permutations.
+     Proved with Alt-Ergo 1.30 only, without splitting. *) 
+  let function code (f: array int) : array int
+    requires { is_fact f }
+    ensures { is_permut result }
+  = 
+    let n = f.length in
+    let p = make n 0 in
+    let l = ref (LE.id n) in
+    (* Timeout if this assertion is removed: proved in 5.33s. Can be
+       removed by increasing timeout: *)
+    assert { injlist !l };
+    while not (is_nil !l) do
+      invariant { -1 <= L.length !l - 1 < n }
+      invariant { LE.is_blist !l n }
+      invariant { injlist !l }
+      invariant { range_sub p (L.length !l) n n }
+      invariant { inj_sub p (L.length !l) n }
+      invariant { disj_sub p (L.length !l) n !l } (* No number in !l is in p[i+1..n-1] *)
+      variant { L.length !l }
+      let i = L.length !l - 1 in (* The following code assigns p[i] *) 
+      label L in
+      let j = f[i] in
+      let k = LE.rm_nth j l in
+(* Part of prover reasoning described by optional assertions:
+      assert { k = nth j (at !l 'L) };        (* k comes from !l *)
+      assert { disj_sub p (i+1) n !l };       (* and !l and p[i+1..n-1] are disjoint, *)
+      assert { not_in_subarray k p (i+1) n }; (* so k is not in p[i+1..n-1]. *)
+*)
+      p[i] <- k;                               (* k is added to p, ... *)
+(* cont'd
+      assert { range_sub p i n n };
+      assert { inj_sub p (i+1) n };           (* ... thus injectivity of p is preserved *)
+*)
+    done;
+    p
 
 end
 

@@ -3,6 +3,10 @@
 "http://why3.lri.fr/why3session.dtd">
 <why3session shape_version="6">
 <prover id="0" name="Alt-Ergo" version="2.4.0" timelimit="5" steplimit="0" memlimit="1000"/>
+<prover id="1" name="Z3" version="4.8.10" timelimit="5" steplimit="0" memlimit="1000"/>
+<prover id="2" name="Alt-Ergo" version="2.4.1" timelimit="30" steplimit="0" memlimit="1000"/>
+<prover id="3" name="CVC4" version="1.6" timelimit="5" steplimit="0" memlimit="1000"/>
+<prover id="4" name="CVC3" version="2.4.1" timelimit="30" steplimit="0" memlimit="1000"/>
 <file format="whyml" proved="true">
 <path name=".."/><path name="Fact.mlw"/>
 <theory name="Fact" proved="true">
@@ -12,10 +16,11 @@
 </theory>
 <theory name="Enum" proved="true">
  <goal name="create_cursor&#39;vc" expl="VC for create_cursor" proved="true">
- <proof prover="0"><result status="valid" time="0.04" steps="248"/></proof>
+ <proof prover="2"><result status="valid" time="0.02" steps="252"/></proof>
  </goal>
  <goal name="next&#39;vc" expl="VC for next" proved="true">
- <proof prover="0"><result status="valid" time="0.75" steps="4325"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.75" steps="4325"/></proof>
+ <proof prover="2"><result status="valid" time="0.66" steps="4358"/></proof>
  </goal>
 </theory>
 <theory name="FactSound" proved="true">
@@ -30,6 +35,117 @@
  </goal>
  <goal name="test_b_fact&#39;vc" expl="VC for test_b_fact" proved="true">
  <proof prover="0"><result status="valid" time="0.00" steps="4"/></proof>
+ </goal>
+</theory>
+<theory name="Code" proved="true">
+ <goal name="code&#39;vc" expl="VC for code" proved="true">
+ <proof prover="2"><result status="timeout" time="30.00"/></proof>
+ <transf name="split_vc" proved="true" >
+  <goal name="code&#39;vc.0" expl="array creation size" proved="true">
+  <proof prover="2"><result status="valid" time="0.02" steps="4"/></proof>
+  </goal>
+  <goal name="code&#39;vc.1" expl="precondition" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="7"/></proof>
+  </goal>
+  <goal name="code&#39;vc.2" expl="assertion" proved="true">
+  <proof prover="2"><result status="valid" time="0.04" steps="67"/></proof>
+  </goal>
+  <goal name="code&#39;vc.3" expl="loop invariant init" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="14"/></proof>
+  </goal>
+  <goal name="code&#39;vc.4" expl="loop invariant init" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="49"/></proof>
+  </goal>
+  <goal name="code&#39;vc.5" expl="loop invariant init" proved="true">
+  <proof prover="2"><result status="valid" time="0.02" steps="15"/></proof>
+  </goal>
+  <goal name="code&#39;vc.6" expl="loop invariant init" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="32"/></proof>
+  </goal>
+  <goal name="code&#39;vc.7" expl="loop invariant init" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="38"/></proof>
+  </goal>
+  <goal name="code&#39;vc.8" expl="loop invariant init" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="74"/></proof>
+  </goal>
+  <goal name="code&#39;vc.9" expl="index in array bounds" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="32"/></proof>
+  </goal>
+  <goal name="code&#39;vc.10" expl="precondition" proved="true">
+  <proof prover="2"><result status="valid" time="0.06" steps="154"/></proof>
+  </goal>
+  <goal name="code&#39;vc.11" expl="index in array bounds" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="36"/></proof>
+  </goal>
+  <goal name="code&#39;vc.12" expl="loop variant decrease" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="38"/></proof>
+  </goal>
+  <goal name="code&#39;vc.13" expl="loop invariant preservation" proved="true">
+  <proof prover="2"><result status="valid" time="0.03" steps="57"/></proof>
+  </goal>
+  <goal name="code&#39;vc.14" expl="loop invariant preservation" proved="true">
+  <proof prover="2"><result status="valid" time="0.12" steps="551"/></proof>
+  </goal>
+  <goal name="code&#39;vc.15" expl="loop invariant preservation" proved="true">
+  <proof prover="2"><result status="valid" time="0.10" steps="596"/></proof>
+  </goal>
+  <goal name="code&#39;vc.16" expl="loop invariant preservation" proved="true">
+  <proof prover="2"><result status="valid" time="0.45" steps="2593"/></proof>
+  </goal>
+  <goal name="code&#39;vc.17" expl="loop invariant preservation" proved="true">
+  <proof prover="2"><result status="valid" time="3.03" steps="16463"/></proof>
+  </goal>
+  <goal name="code&#39;vc.18" expl="loop invariant preservation" proved="true">
+  <proof prover="1" timelimit="1"><result status="timeout" time="1.00" steps="2256731"/></proof>
+  <proof prover="2"><result status="timeout" time="30.00"/></proof>
+  <proof prover="3" timelimit="1"><result status="timeout" time="1.00" steps="110750"/></proof>
+  <transf name="split_vc" proved="true" >
+   <goal name="code&#39;vc.18.0" expl="loop invariant preservation" proved="true">
+   <proof prover="1" memlimit="2000"><result status="timeout" time="5.00" steps="9549021"/></proof>
+   <proof prover="3" memlimit="2000"><result status="timeout" time="5.00" steps="406382"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="code&#39;vc.18.0.0" expl="loop invariant preservation" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="code&#39;vc.18.0.0.0" expl="loop invariant preservation" proved="true">
+     <proof prover="1" timelimit="1"><result status="timeout" time="1.00" steps="2603549"/></proof>
+     <proof prover="3" timelimit="1"><result status="timeout" time="1.00" steps="108836"/></proof>
+     <transf name="split_vc" proved="true" >
+      <goal name="code&#39;vc.18.0.0.0.0" expl="loop invariant preservation" proved="true">
+      <proof prover="1" memlimit="2000"><result status="timeout" time="5.00" steps="8356995"/></proof>
+      <proof prover="3" memlimit="2000"><result status="timeout" time="5.00" steps="254947"/></proof>
+      <transf name="inline_goal" proved="true" >
+       <goal name="code&#39;vc.18.0.0.0.0.0" expl="loop invariant preservation" proved="true">
+       <proof prover="1" timelimit="1"><result status="timeout" time="1.00" steps="3723698"/></proof>
+       <proof prover="3" timelimit="1"><result status="timeout" time="1.00" steps="113357"/></proof>
+       <transf name="split_vc" proved="true" >
+        <goal name="code&#39;vc.18.0.0.0.0.0.0" expl="loop invariant preservation" proved="true">
+        <proof prover="1" memlimit="2000"><result status="timeout" time="5.00" steps="8687237"/></proof>
+        <proof prover="3" memlimit="2000"><result status="timeout" time="5.00" steps="446925"/></proof>
+        <transf name="inline_goal" proved="true" >
+         <goal name="code&#39;vc.18.0.0.0.0.0.0.0" expl="loop invariant preservation" proved="true">
+         <proof prover="1" timelimit="30"><undone/></proof>
+         <proof prover="2"><result status="valid" time="0.40" steps="3756"/></proof>
+         <proof prover="3" timelimit="30"><result status="valid" time="3.42" steps="337904"/></proof>
+         <proof prover="4"><result status="timeout" time="30.00"/></proof>
+         </goal>
+        </transf>
+        </goal>
+       </transf>
+       </goal>
+      </transf>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="code&#39;vc.19" expl="postcondition" proved="true">
+  <proof prover="2"><result status="valid" time="3.00" steps="9611"/></proof>
+  </goal>
+ </transf>
  </goal>
 </theory>
 <theory name="FactEndo" proved="true">
